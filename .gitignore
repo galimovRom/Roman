@@ -1,0 +1,539 @@
+#include <iostream>
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+#include <string.h>
+#include <math.h>
+#include <ctime>
+using namespace std;
+char sifr[10];
+bool ad=false;
+int ss=1,zz=0,sch=0,azx=0,mas[10];
+int masss[10],rd;
+void gotoxy(int, int);
+void vibor();
+void proverka();
+void vvod();
+void obv();
+void comp(char);
+void vibor()
+{
+	bool vb;
+	do
+	{
+	int vib=0;
+	vb=false;
+	azx=0;
+	ss=1;
+	zz=0;
+	sch=0;
+	ad=false;
+		
+	for (int i=0; i<10; i++)
+	{
+		sifr[i]=i+48;
+	}
+	system("cls");
+	cout<<"Viderite variant igri"<<"\n"<<"1) 2 igroka"<<"\n"<<"2) protiv kompa";
+	cout<<"\n"<<"3)vixod"<<"\n";
+	vib=getch();
+	if (vib==49)
+	{
+		obv();
+	do
+	{
+		proverka();
+		if (ad==false)
+		vvod();	
+	}
+	while(ad==false);
+	}
+	if (vib==50)
+	{
+		system("cls");
+		char krno=0;
+		bool gg=true;
+		cout<<"viberite: \n"<<"1)Igrat za krestiki  \n"<<"2)Igrat za noliki \n";
+		do
+		{
+			krno=getch();
+			if ((krno==49) || (krno==50))
+			gg=false;
+		}
+		while(gg==true);
+		system("cls");
+		if (azx==0)
+		{
+		int u=0,e=0;
+		for (int i=1; i<10; i++)
+		{
+			masss[i]=i;
+		}
+		do
+		{
+			srand(time(NULL));
+			rd=rand()%9+1;
+			for(int i=1; i<10; i++)
+			{
+				if (masss[i]==rd)
+				{
+					u++;
+					masss[i]=0;
+					mas[u]=rd;
+					if (u==8)
+					{
+						int e;
+						for(int i=1; i<10; i++)
+						{
+							if (masss[i]!=0)
+							e=masss[i];
+						}
+						u++;
+						mas[u]=e;
+					}
+				}
+			}
+		}
+		while(u!=9);
+		azx=1;
+	}
+		obv();
+		while(ad==false)
+		{
+			proverka();
+			if (ad==false)
+			comp(krno);
+		}
+	}
+	if (vib==51)
+		vb=true;
+	}
+	while(vb==false);
+	return;
+}
+void obv()
+{
+	char simv[11];
+	simv[0]=201;
+	simv[1]=187;
+	simv[2]=188;
+	simv[3]=200;
+	simv[4]=203;
+	simv[5]=185;
+	simv[6]=202;
+	simv[7]=204;
+	simv[8]=206;
+	simv[9]=205;
+	simv[10]=186;
+	system("cls");
+	cout<<simv[0]<<simv[9]<<simv[4]<<simv[9]<<simv[4]<<simv[9]<<simv[1]<<"\n";
+	cout<<simv[10]<<sifr[1]<<simv[10]<<sifr[2]<<simv[10]<<sifr[3]<<simv[10]<<"\n";
+	cout<<simv[7]<<simv[9]<<simv[8]<<simv[9]<<simv[8]<<simv[9]<<simv[5]<<"\n";
+	cout<<simv[10]<<sifr[4]<<simv[10]<<sifr[5]<<simv[10]<<sifr[6]<<simv[10]<<"\n";
+	cout<<simv[7]<<simv[9]<<simv[8]<<simv[9]<<simv[8]<<simv[9]<<simv[5]<<"\n";
+	cout<<simv[10]<<sifr[7]<<simv[10]<<sifr[8]<<simv[10]<<sifr[9]<<simv[10]<<"\n";
+	cout<<simv[3]<<simv[9]<<simv[6]<<simv[9]<<simv[6]<<simv[9]<<simv[2]<<"\n";
+	proverka();	
+}
+void vvod()
+{
+	bool d=true;
+	do
+	{
+	sifr[0]=getch();
+	if ((sifr[0]>48) && (sifr[0]<58))
+	{
+	for (int i=1; i<10; i++)
+	{
+		if ((ss==1) || (ss%2==1))
+		{
+			if (sifr[0]==sifr[i])
+			{
+			d=false;
+			sifr[i]=88;
+			int a,s;
+			if((sifr[0]>48) && (sifr[0]<52))
+			{
+				s=1;
+				if (i==1)
+					a=1;
+				if (i==2)
+					a=3;
+				if (i==3)
+					a=5;
+			}
+			if((sifr[0]>51) && (sifr[0]<55))
+			{
+				s=3;
+				if (i==4)
+					a=1;
+				if (i==5)
+					a=3;
+				if (i==6)
+					a=5;
+			}
+			if((sifr[0]>54) && (sifr[0]<=57))
+			{
+				s=5;
+				if (i==7)
+					a=1;
+				if (i==8)
+					a=3;
+				if (i==9)
+					a=5;
+			}
+			gotoxy(a,s);
+			cout<<" ";
+			gotoxy(a,s);
+			cout<<sifr[i];
+			gotoxy(0,7);
+			ss++;
+			break;
+			}
+		}
+		if (ss%2==0)
+		{
+			if (sifr[0]==sifr[i])
+			{
+			d=false;
+			sifr[i]=79;		
+			int a,s;
+			if((sifr[0]>48) && (sifr[0]<52))
+			{
+				s=1;
+				if (i==1)
+					a=1;
+				if (i==2)
+					a=3;
+				if (i==3)
+					a=5;
+			}
+			if((sifr[0]>51) && (sifr[0]<55))
+			{
+				s=3;
+				if (i==4)
+					a=1;
+				if (i==5)
+					a=3;
+				if (i==6)
+					a=5;
+			}
+			if((sifr[0]>54) && (sifr[0]<=57))
+			{
+				s=5;
+				if (i==7)
+					a=1;
+				if (i==8)
+					a=3;
+				if (i==9)
+					a=5;
+			}
+			gotoxy(a,s);
+			cout<<" ";
+			gotoxy(a,s);
+			cout<<sifr[i];
+			gotoxy(0,7);
+			ss++;
+			break;
+			}
+		}
+	}
+	}
+	}
+	while(d==true);
+	return;
+}
+void proverka()
+{
+	if (((sifr[1]==sifr[2]) && (sifr[2]==sifr[3])) || ((sifr[4]==sifr[5]) && (sifr[5]==sifr[6]))
+	|| ((sifr[7]==sifr[8]) && (sifr[8]==sifr[9])) || ((sifr[1]==sifr[4]) && (sifr[4]==sifr[7]))
+	|| ((sifr[2]==sifr[5]) && (sifr[5]==sifr[8])) || ((sifr[3]==sifr[6]) && (sifr[6]==sifr[9]))
+	|| ((sifr[1]==sifr[5]) && (sifr[5]==sifr[9])) || ((sifr[3]==sifr[5]) && (sifr[5]==sifr[7])))
+	{
+		ad=true;
+		gotoxy(0,7);
+		if (ss!=1)
+		{
+			if (ss%2==0)
+				cout<<"Pobedili krestiki";
+			else
+				cout<<"Pobedili noliki";
+		}
+		else
+		{
+			if (sch%2==1)
+				cout<<"Pobedili krestiki";
+			else
+				cout<<"Pobedili noliki";
+		}
+		cout<<"\n";
+		system("pause");
+	}
+	int vvv=0;
+	for (int i=1; i<10; i++)
+	{
+		if ((sifr[i]==79) || (sifr[i]==88))
+		{
+			vvv++;
+		}
+		if (vvv==9)
+		{
+			gotoxy(0,7);
+			cout<<"Pobeditelei net"<<"\n";
+			ad=true;
+			system("pause");
+		}
+	}
+return;
+}
+void comp(char krno)
+{
+	bool d=true;
+	if (krno==49)
+	{
+
+		++sch;
+		if ((sch%2==1) || (sch==1))
+		{
+	do
+	{
+		sifr[0]=getch();
+		if ((sifr[0]>48) && (sifr[0]<58))
+		{
+			for (int i=1; i<10; i++)
+			{
+					if ((sifr[0]==sifr[i]) && (sifr[i]!=79) && (sifr[i]!=88))
+					{
+					d=false;
+					sifr[i]=88;
+					for (int j=1; j<10; j++)
+					{
+						if (mas[j]==(sifr[0]-48))
+							mas[j]=0;
+					}
+
+					int a,s;
+					if((sifr[0]>48) && (sifr[0]<52))
+					{
+						s=1;
+						if (i==1)
+							a=1;
+						if (i==2)
+							a=3;
+						if (i==3)
+							a=5;
+					}
+					if((sifr[0]>51) && (sifr[0]<55))
+					{
+						s=3;
+						if (i==4)
+							a=1;
+						if (i==5)
+							a=3;
+						if (i==6)
+							a=5;
+					}
+					if((sifr[0]>54) && (sifr[0]<58))
+					{
+						s=5;
+						if (i==7)
+							a=1;
+						if (i==8)
+							a=3;
+						if (i==9)
+							a=5;
+					}
+					gotoxy(a,s);
+					cout<<" ";
+					gotoxy(a,s);
+					cout<<sifr[i];
+					gotoxy(0,7);
+					break;
+					}
+			}
+		}
+	}
+	while(d==true);
+		}
+	int per,qq=1;
+	int a,s;
+	if (sch%2==0)
+	{
+			for (int i=1;i<10;i++)
+			{
+				if (mas[i]!=0)
+				{
+					per=mas[i];
+					sifr[per]=79;
+					mas[i]=0;	
+					if((per>0) && (per<4))
+					{
+						s=1;
+						if (per==1)
+							a=1;
+						if (per==2)
+							a=3;
+						if (per==3)
+							a=5;
+					}
+					if((per>3) && (per<7))
+					{
+						s=3;
+						if (per==4)
+							a=1;
+						if (per==5)
+							a=3;
+						if (per==6)
+							a=5;
+					}
+					if((per>6) && (per<10))
+					{
+						s=5;
+						if (per==7)
+							a=1;
+						if (per==8)
+							a=3;
+						if (per==9)
+							a=5;
+					}
+					gotoxy(a,s);
+					cout<<" ";
+					gotoxy(a,s);
+					cout<<sifr[per];
+					gotoxy(0,7);
+					break;
+				}
+			}
+	}
+	}
+	else
+	{
+		++sch;
+		if (sch%2==0)
+		{
+	do
+	{
+		sifr[0]=getch();
+		if ((sifr[0]>48) && (sifr[0]<58))
+		{
+			for (int i=1; i<10; i++)
+			{
+					if ((sifr[0]==sifr[i]) && (sifr[i]!=79) && (sifr[i]!=88))
+					{
+					d=false;
+					sifr[i]=79;
+					for (int j=1; j<10; j++)
+					{
+						if (mas[j]==(sifr[0]-48))
+							mas[j]=0;
+					}
+					int a,s;
+			if((sifr[0]>48) && (sifr[0]<52))
+			{
+				s=1;
+				if (i==1)
+					a=1;
+				if (i==2)
+					a=3;
+				if (i==3)
+					a=5;
+			}
+			if((sifr[0]>51) && (sifr[0]<55))
+			{
+				s=3;
+				if (i==4)
+					a=1;
+				if (i==5)
+					a=3;
+				if (i==6)
+					a=5;
+			}
+			if((sifr[0]>54) && (sifr[0]<58))
+			{
+				s=5;
+				if (i==7)
+					a=1;
+				if (i==8)
+					a=3;
+				if (i==9)
+					a=5;
+			}
+			gotoxy(a,s);
+			cout<<" ";
+			gotoxy(a,s);
+			cout<<sifr[i];
+			gotoxy(0,7);
+					break;
+					}
+			}
+		}
+	}
+	while(d==true);
+		}
+	int per,qq=1,a,s;
+	if ((sch%2==1) || (sch==1))
+	{
+			for (int i=1;i<10;i++)
+			{
+				if (mas[i]!=0)
+				{
+					per=mas[i];
+					sifr[per]=88;
+					mas[i]=0;
+					if((per>0) && (per<4))
+			{
+				s=1;
+				if (per==1)
+					a=1;
+				if (per==2)
+					a=3;
+				if (per==3)
+					a=5;
+			}
+			if((per>3) && (per<7))
+			{
+				s=3;
+				if (per==4)
+					a=1;
+				if (per==5)
+					a=3;
+				if (per==6)
+					a=5;
+			}
+			if((per>6) && (per<10))
+			{
+				s=5;
+				if (per==7)
+					a=1;
+				if (per==8)
+					a=3;
+				if (per==9)
+					a=5;
+			}
+			gotoxy(a,s);
+			cout<<" ";
+			gotoxy(a,s);
+			cout<<sifr[per];
+			gotoxy(0,7);
+			break;
+				}
+			}
+	}
+	}
+	return;
+}   
+int main()
+{	
+	//setlocale(LC_ALL, "rus");
+	vibor();
+	return 0;
+}
+
+void gotoxy (int xpos,int ypos)
+{
+	COORD scrn;
+	HANDLE hOuput= GetStdHandle(STD_OUTPUT_HANDLE);
+	scrn.X=xpos;
+	scrn.Y=ypos;
+	SetConsoleCursorPosition(hOuput,scrn);
+}
