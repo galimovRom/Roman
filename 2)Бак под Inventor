@@ -1,0 +1,2968 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using Inventor;
+using System.Diagnostics;
+using System.Reflection;
+using System.Threading.Tasks;
+
+
+namespace Galimov
+{
+    public partial class Form1 : Form
+    {
+        #region не нужное
+        /// ThisApplication - Объект для определения активного состояния Инвентора
+        private Inventor.Application ThisApplication = null;
+        /// Словарь для хранения ссылок на документы деталей
+        private Dictionary<string, PartDocument> oPartDoc = new Dictionary<string,
+        PartDocument>();
+        /// Словарь для хранения ссылок на определения деталей
+        private Dictionary<string, PartComponentDefinition> oCompDef = new
+        Dictionary<string, PartComponentDefinition>();
+        /// Словарь для хранения ссылок на инструменты создания деталей
+        private Dictionary<string, TransientGeometry> oTransGeom = new
+        Dictionary<string, TransientGeometry>();
+        /// Словарь для хранения ссылок на транзакции редактирования
+        private Dictionary<string, Transaction> oTrans = new Dictionary<string,
+        Transaction>();
+        /// Словарь для хранения имен сохраненных документов деталей
+        private Dictionary<string, string> oFileName = new Dictionary<string,
+        string>();
+        // private AssemblyDocument oAssemblyDocName;
+        #endregion
+        public static double D = 900, D1 = 1000, D2 = 710, D3 = 1110, H = 1270, H1 = 345, H2 = 800, H3 = 215, H4 = 480,
+            H5 = 750, H6 = 895, H7 = 198, H8 = 142, H9 = 245, H10 = 115, L = 1170, L1 = 620, L2 = 235, L3 = 310, S = 21, S1 = 8,
+            S2 = 22, S3 = 6, d = 24, Otv = 65, vis = 0, X = 150, Y = 150, H11 = 680, H12 = 130, L4 = 88, OtvE = 40, OtvD = 65, H13 = 375,
+            dlin = 5, OtvG = 65, OtvL = 150, B1 = 180, B2 = 10, B3 = 20, T1 = 10, T2 = 40, T3 = 80, T4 = 60, a1=10, a2=30, a3=10,
+            b1=75, b2=6, b3=6, b4=6, Otve=40, Kolb1=6, Kolb2=6, Kolb3=12, Kolb4=6, K=5.3, Lg=28, Ls=26.75, U=1.25, K1=28, K2=13, K3=8, e=14.38, P=1.25;
+
+        public Form1()
+        {
+            InitializeComponent();
+            comboBox1.Text = System.Convert.ToString(D);
+            this.comboBox1.Items.AddRange(new object[] { "900", "1000", "1200", "1400" });
+            comboBox2.Text = System.Convert.ToString(H11);
+            this.comboBox2.Items.AddRange(new object[] { "680", "810", "1200", "1450" });
+            comboBox3.Text = System.Convert.ToString(H3);
+            this.comboBox3.Items.AddRange(new object[] { "215", "215", "250", "250" });
+            comboBox4.Text = System.Convert.ToString(H5);
+            this.comboBox4.Items.AddRange(new object[] { "750", "880", "1300", "1530" });
+            comboBox5.Text = System.Convert.ToString(H6);
+            this.comboBox5.Items.AddRange(new object[] { "895", "1025", "1450", "1700" });
+            comboBox6.Text = System.Convert.ToString(S2);
+            this.comboBox6.Items.AddRange(new object[] { "22", "24", "23", "26" });
+            comboBox7.Text = System.Convert.ToString(D1);
+            this.comboBox7.Items.AddRange(new object[] { "1000", "1100", "1300", "1500" });
+            comboBox8.Text = System.Convert.ToString(S3);
+            this.comboBox8.Items.AddRange(new object[] { "6", "6", "8", "8" });
+            comboBox9.Text = System.Convert.ToString(H7);
+            this.comboBox9.Items.AddRange(new object[] { "198", "217", "258", "292" });
+            comboBox10.Text = System.Convert.ToString(D2);
+            this.comboBox10.Items.AddRange(new object[] { "710", "790", "850", "950" });
+            comboBox11.Text = System.Convert.ToString(L4);
+            this.comboBox11.Items.AddRange(new object[] { "88", "96", "92", "104" });
+            comboBox12.Text = System.Convert.ToString(H12);
+            this.comboBox12.Items.AddRange(new object[] { "130", "130", "205", "205" });
+            comboBox13.Text = System.Convert.ToString(S1);
+            this.comboBox13.Items.AddRange(new object[] { "8", "8", "10", "10" });
+            comboBox14.Text = System.Convert.ToString(S);
+            this.comboBox14.Items.AddRange(new object[] { "21", "23", "21", "24" });
+            comboBox15.Text = System.Convert.ToString(Otv);
+            this.comboBox15.Items.AddRange(new object[] { "65", "65", "100", "100" });
+            comboBox16.Text = System.Convert.ToString(OtvE);
+            this.comboBox16.Items.AddRange(new object[] { "40", "40", "40", "40" });
+            comboBox17.Text = System.Convert.ToString(OtvD);
+            this.comboBox17.Items.AddRange(new object[] { "65", "65", "100", "100" });
+            comboBox18.Text = System.Convert.ToString(D);
+            this.comboBox18.Items.AddRange(new object[] { "900", "1000", "1200", "1400" });
+            comboBox19.Text = System.Convert.ToString(H9);
+            this.comboBox19.Items.AddRange(new object[] { "245", "255", "305", "330" });
+            comboBox20.Text = System.Convert.ToString(H13);
+            this.comboBox20.Items.AddRange(new object[] { "375", "400", "520", "535" });
+            comboBox21.Text = System.Convert.ToString(L3);
+            this.comboBox21.Items.AddRange(new object[] { "310", "330", "420", "460" });
+            comboBox22.Text = System.Convert.ToString(L4);
+            this.comboBox22.Items.AddRange(new object[] { "88", "96", "92", "104" });
+            comboBox23.Text = System.Convert.ToString(S);
+            this.comboBox23.Items.AddRange(new object[] { "21", "23", "21", "24" });
+            comboBox24.Text = System.Convert.ToString(OtvG);
+            this.comboBox24.Items.AddRange(new object[] { "65", "65", "100", "100" });
+            comboBox25.Text = System.Convert.ToString(OtvG);
+            this.comboBox25.Items.AddRange(new object[] { "65", "65", "100", "100" });
+            comboBox26.Text = System.Convert.ToString(OtvL);
+            this.comboBox26.Items.AddRange(new object[] { "150", "250", "300,400", "300,400" });
+            comboBox27.Text = System.Convert.ToString(B1);
+            this.comboBox27.Items.AddRange(new object[] { "18", "20", "22", "24" });
+            comboBox28.Text = System.Convert.ToString(B2);
+            this.comboBox28.Items.AddRange(new object[] { "10", "10", "15", "15" });
+            comboBox29.Text = System.Convert.ToString(B3);
+            this.comboBox29.Items.AddRange(new object[] { "20", "20", "30", "30" });
+            comboBox30.Text = System.Convert.ToString(T1);
+            this.comboBox30.Items.AddRange(new object[] { "10", "10", "15", "15" });
+            comboBox31.Text = System.Convert.ToString(T2);
+            this.comboBox31.Items.AddRange(new object[] { "40", "40", "60", "60" });
+            comboBox32.Text = System.Convert.ToString(T3);
+            this.comboBox32.Items.AddRange(new object[] { "80", "80", "100", "100" });
+            comboBox33.Text = System.Convert.ToString(T4);
+            this.comboBox33.Items.AddRange(new object[] { "60", "60", "80", "80" });
+            comboBox34.Text = System.Convert.ToString(d);
+            this.comboBox34.Items.AddRange(new object[] { "24", "24", "24", "24" });
+            comboBox35.Text = System.Convert.ToString(a1);
+            comboBox36.Text = System.Convert.ToString(a2);
+            comboBox37.Text = System.Convert.ToString(a3);
+            comboBox38.Text = System.Convert.ToString(b1);
+            comboBox39.Text = System.Convert.ToString(b2);
+            comboBox40.Text = System.Convert.ToString(b3);
+            comboBox41.Text = System.Convert.ToString(b4);
+            comboBox43.Text = System.Convert.ToString(Otve);
+            comboBox42.Text = System.Convert.ToString(Kolb1);
+            comboBox44.Text = System.Convert.ToString(Kolb2);
+            comboBox45.Text = System.Convert.ToString(Kolb3);
+            comboBox46.Text = System.Convert.ToString(Kolb4);
+            comboBox47.Text = "M8";
+            comboBox48.Text = System.Convert.ToString(K);
+            comboBox49.Text = System.Convert.ToString(K1);
+            comboBox50.Text = System.Convert.ToString(K2);
+            comboBox51.Text = System.Convert.ToString(K3);
+            comboBox52.Text = System.Convert.ToString(Lg);
+            comboBox53.Text = System.Convert.ToString(Ls);
+            comboBox54.Text = System.Convert.ToString(U);
+            comboBox55.Text = System.Convert.ToString(P);
+            comboBox56.Text = System.Convert.ToString(e);
+
+
+            comboBox70.Text = "0,4-12-01";
+            this.comboBox70.Items.AddRange(new object[] { "0,4-12-01", "0,63-0-12-01", "1,25-0-12-01", "2,0-0-12-01" });
+            comboBox71.Text = "0,4-12-01";
+            this.comboBox71.Items.AddRange(new object[] { "0,4-12-01", "0,63-0-12-01", "1,25-0-12-01", "2,0-0-12-01" });
+            comboBox72.Text = "0,4-12-01";
+            this.comboBox72.Items.AddRange(new object[] { "0,4-12-01", "0,63-0-12-01", "1,25-0-12-01", "2,0-0-12-01" });
+            comboBox73.Text = "1";
+            this.comboBox73.Items.AddRange(new object[] { "1", "2", "3", "4" });
+
+            // Вставка
+            try
+            {
+                //Проверка наличия активного состояния Инвентора. 
+                ThisApplication = (Inventor.Application)System.Runtime.InteropServices.
+                Marshal.GetActiveObject("Inventor.Application");
+                //if (ThisApplication != null) System.Windows.Forms.MessageBox.Show("Инвентор  открыт!");
+            }
+            catch
+            {
+                // System.Windows.Forms.MessageBox.Show("Откройте Инвентор!"); 
+            }
+        }
+        #region кнопки
+
+        private void comboBox1_TextChanged(object sender, EventArgs e)
+        {
+            D = System.Convert.ToDouble(comboBox1.Text);
+        }
+        private void comboBox2_TextChanged(object sender, EventArgs e)
+        {
+            H11 = System.Convert.ToDouble(comboBox2.Text);
+        }
+        private void comboBox3_TextChanged(object sender, EventArgs e)
+        {
+            H3 = System.Convert.ToDouble(comboBox3.Text);
+        }
+        private void comboBox4_TextChanged(object sender, EventArgs e)
+        {
+            H5 = System.Convert.ToDouble(comboBox4.Text);
+        }
+        private void comboBox5_TextChanged(object sender, EventArgs e)
+        {
+            H6 = System.Convert.ToDouble(comboBox5.Text);
+        }
+        private void comboBox6_TextChanged(object sender, EventArgs e)
+        {
+            S2 = System.Convert.ToDouble(comboBox6.Text);
+        }
+        private void comboBox7_TextChanged(object sender, EventArgs e)
+        {
+            D1 = System.Convert.ToDouble(comboBox7.Text);
+        }
+        private void comboBox8_TextChanged(object sender, EventArgs e)
+        {
+            S3 = System.Convert.ToDouble(comboBox8.Text);
+        }
+        private void comboBox9_TextChanged(object sender, EventArgs e)
+        {
+            H7 = System.Convert.ToDouble(comboBox9.Text);
+        }
+        private void comboBox10_TextChanged(object sender, EventArgs e)
+        {
+            D2 = System.Convert.ToDouble(comboBox10.Text);
+        }
+        private void comboBox11_TextChanged(object sender, EventArgs e)
+        {
+            L4 = System.Convert.ToDouble(comboBox11.Text);
+        }
+        private void comboBox12_TextChanged(object sender, EventArgs e)
+        {
+            H12 = System.Convert.ToDouble(comboBox12.Text);
+        }
+        private void comboBox13_TextChanged(object sender, EventArgs e)
+        {
+            S1 = System.Convert.ToDouble(comboBox13.Text);
+        }
+        private void comboBox14_TextChanged(object sender, EventArgs e)
+        {
+            S = System.Convert.ToDouble(comboBox14.Text);
+        }
+        private void comboBox15_TextChanged(object sender, EventArgs e)
+        {
+            Otv = System.Convert.ToDouble(comboBox15.Text);
+        }
+        private void comboBox16_TextChanged(object sender, EventArgs e)
+        {
+            OtvE = System.Convert.ToDouble(comboBox16.Text);
+        }
+        private void comboBox17_TextChanged(object sender, EventArgs e)
+        {
+            OtvD = System.Convert.ToDouble(comboBox17.Text);
+        }
+        private void comboBox18_TextChanged(object sender, EventArgs e)
+        {
+            D = System.Convert.ToDouble(comboBox18.Text);
+        }
+        private void comboBox19_TextChanged(object sender, EventArgs e)
+        {
+            H9 = System.Convert.ToDouble(comboBox19.Text);
+        }
+        private void comboBox20_TextChanged(object sender, EventArgs e)
+        {
+            H13 = System.Convert.ToDouble(comboBox20.Text);
+        }
+        private void comboBox21_TextChanged(object sender, EventArgs e)
+        {
+            L3 = System.Convert.ToDouble(comboBox21.Text);
+        }
+        private void comboBox22_TextChanged(object sender, EventArgs e)
+        {
+            L4 = System.Convert.ToDouble(comboBox22.Text);
+        }
+        private void comboBox23_TextChanged(object sender, EventArgs e)
+        {
+            S = System.Convert.ToDouble(comboBox23.Text);
+        }
+        private void comboBox24_TextChanged(object sender, EventArgs e)
+        {
+            OtvG = System.Convert.ToDouble(comboBox24.Text);
+        }
+        private void comboBox25_TextChanged(object sender, EventArgs e)
+        {
+            OtvG = System.Convert.ToDouble(comboBox25.Text);
+        }
+        private void comboBox26_TextChanged(object sender, EventArgs e)
+        {
+            OtvL = System.Convert.ToDouble(comboBox26.Text);
+        }
+        private void comboBox27_TextChanged(object sender, EventArgs e)
+        {
+            B1 = System.Convert.ToDouble(comboBox27.Text);
+        }
+        private void comboBox28_TextChanged(object sender, EventArgs e)
+        {
+            B2 = System.Convert.ToDouble(comboBox28.Text);
+        }
+        private void comboBox29_TextChanged(object sender, EventArgs e)
+        {
+            B3 = System.Convert.ToDouble(comboBox29.Text);
+        }
+        private void comboBox30_TextChanged(object sender, EventArgs e)
+        {
+            T1 = System.Convert.ToDouble(comboBox30.Text);
+        }
+        private void comboBox31_TextChanged(object sender, EventArgs e)
+        {
+            T2 = System.Convert.ToDouble(comboBox31.Text);
+        }
+        private void comboBox32_TextChanged(object sender, EventArgs e)
+        {
+            T3 = System.Convert.ToDouble(comboBox32.Text);
+        }
+        private void comboBox33_TextChanged(object sender, EventArgs e)
+        {
+            T4 = System.Convert.ToDouble(comboBox33.Text);
+        }
+        private void comboBox34_TextChanged(object sender, EventArgs e)
+        {
+            d = System.Convert.ToDouble(comboBox34.Text);
+        }
+        private void comboBox35_TextChanged(object sender, EventArgs e)
+        {
+            a1 = System.Convert.ToDouble(comboBox35.Text);
+        }
+        private void comboBox36_TextChanged(object sender, EventArgs e)
+        {
+            a2 = System.Convert.ToDouble(comboBox36.Text);
+        }
+        private void comboBox37_TextChanged(object sender, EventArgs e)
+        {
+            a3 = System.Convert.ToDouble(comboBox37.Text);
+        }
+        private void comboBox38_TextChanged(object sender, EventArgs e)
+        {
+            b1 = System.Convert.ToDouble(comboBox38.Text);
+        }
+        private void comboBox39_TextChanged(object sender, EventArgs e)
+        {
+            b2 = System.Convert.ToDouble(comboBox39.Text);
+        }
+        private void comboBox40_TextChanged(object sender, EventArgs e)
+        {
+            b3 = System.Convert.ToDouble(comboBox40.Text);
+        }
+        private void comboBox41_TextChanged(object sender, EventArgs e)
+        {
+            b4 = System.Convert.ToDouble(comboBox41.Text);
+        }
+        private void comboBox43_TextChanged(object sender, EventArgs e)
+        {
+            Otve = System.Convert.ToDouble(comboBox43.Text);
+        }
+        private void comboBox42_TextChanged(object sender, EventArgs e)
+        {
+            Kolb1 = System.Convert.ToDouble(comboBox42.Text);
+        }
+        private void comboBox44_TextChanged(object sender, EventArgs e)
+        {
+            Kolb2 = System.Convert.ToDouble(comboBox44.Text);
+        }
+        private void comboBox45_TextChanged(object sender, EventArgs e)
+        {
+            Kolb3 = System.Convert.ToDouble(comboBox45.Text);
+        }
+        private void comboBox46_TextChanged(object sender, EventArgs e)
+        {
+            Kolb4 = System.Convert.ToDouble(comboBox46.Text);
+        }
+
+
+
+        private void comboBox70_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox70.SelectedIndex)
+            {
+                case 0:
+                    D = 900;
+                    comboBox1.Text = System.Convert.ToString(D);
+                    H1 = 345;
+                    H11 = 680;
+                    comboBox2.Text = System.Convert.ToString(H11);
+                    H3 = 215;
+                    comboBox3.Text = System.Convert.ToString(H3);
+                    H5 = 750;
+                    comboBox4.Text = System.Convert.ToString(H5);
+                    H6 = 895;
+                    comboBox5.Text = System.Convert.ToString(H6);
+                    S2 = 22;
+                    comboBox6.Text = System.Convert.ToString(S2);
+                    D1 = 1000;
+                    comboBox7.Text = System.Convert.ToString(D1);
+                    S3 = 6;
+                    comboBox8.Text = System.Convert.ToString(S3);
+                    H7 = 198;
+                    comboBox9.Text = System.Convert.ToString(H7);
+                    D2 = 710;
+                    comboBox10.Text = System.Convert.ToString(D2);
+                    H4 = 480;
+                    L4 = 88;
+                    comboBox11.Text = System.Convert.ToString(L4);
+                    H12 = 130;
+                    comboBox12.Text = System.Convert.ToString(H12);
+                    L2 = 235;
+                    S1 = 8;
+                    comboBox13.Text = System.Convert.ToString(S1);
+                    S = 21;
+                    comboBox14.Text = System.Convert.ToString(S);
+                    Otv = 65;
+                    comboBox15.Text = System.Convert.ToString(Otv);
+                    OtvD = 65;
+                    comboBox17.Text = System.Convert.ToString(OtvD);
+                    comboBox18.Text = System.Convert.ToString(D);
+                    H9 = 245;
+                    comboBox19.Text = System.Convert.ToString(H9);
+                    H13 = 375;
+                    comboBox20.Text = System.Convert.ToString(H13);
+                    L3 = 310;
+                    comboBox21.Text = System.Convert.ToString(L3);
+                    comboBox22.Text = System.Convert.ToString(L4);
+                    comboBox23.Text = System.Convert.ToString(S);
+                    OtvG = 65;
+                    comboBox24.Text = System.Convert.ToString(OtvG);
+                    comboBox25.Text = System.Convert.ToString(OtvG);
+                    OtvL = 150;
+                    comboBox26.Text = System.Convert.ToString(OtvL);
+                    dlin = 5;
+                    vis = 10;
+                    B1 = 18;
+                    comboBox27.Text = System.Convert.ToString(B1);
+                    B2 = 10;
+                    comboBox28.Text = System.Convert.ToString(B2);
+                    B3 = 20;
+                    comboBox29.Text = System.Convert.ToString(B3);
+                    T1 = 10;
+                    comboBox30.Text = System.Convert.ToString(T1);
+                    T2 = 40;
+                    comboBox31.Text = System.Convert.ToString(T2);
+                    T3 = 80;
+                    comboBox32.Text = System.Convert.ToString(T3);
+                    T4 = 60;
+                    comboBox33.Text = System.Convert.ToString(T4);
+                    d = 24;
+                    comboBox34.Text = System.Convert.ToString(d);
+
+
+                    X = 150;
+                    Y = 150;
+                    vis = 0;
+                    Otv = 65;
+                    comboBox71.SelectedIndex = 0;
+                    comboBox72.SelectedIndex = 0;
+                    comboBox73.SelectedIndex = 0;
+                    break;
+                case 1:
+                    D = 1000;
+                    comboBox1.Text = System.Convert.ToString(D);
+                    H1 = 345;
+                    H11 = 810;
+                    comboBox2.Text = System.Convert.ToString(H11);
+                    H3 = 215;
+                    comboBox3.Text = System.Convert.ToString(H3);
+                    H5 = 880;
+                    comboBox4.Text = System.Convert.ToString(H5);
+                    H6 = 1025;
+                    comboBox5.Text = System.Convert.ToString(H6);
+                    S2 = 24;
+                    comboBox6.Text = System.Convert.ToString(S2);
+                    D1 = 1100;
+                    comboBox7.Text = System.Convert.ToString(D1);
+                    S3 = 6;
+                    comboBox8.Text = System.Convert.ToString(S3);
+                    H7 = 217;
+                    comboBox9.Text = System.Convert.ToString(H7);
+                    D2 = 790;
+                    comboBox10.Text = System.Convert.ToString(D2);
+                    H4 = 520;
+                    L4 = 96;
+                    comboBox11.Text = System.Convert.ToString(L4);
+                    H12 = 130;
+                    comboBox12.Text = System.Convert.ToString(H12);
+                    L2 = 235;
+                    S1 = 8;
+                    comboBox13.Text = System.Convert.ToString(S1);
+                    S = 23;
+                    comboBox14.Text = System.Convert.ToString(S);
+                    Otv = 65;
+                    comboBox15.Text = System.Convert.ToString(Otv);
+                    OtvD = 65;
+                    comboBox17.Text = System.Convert.ToString(OtvD);
+                    comboBox18.Text = System.Convert.ToString(D);
+                    H9 = 255;
+                    comboBox19.Text = System.Convert.ToString(H9);
+                    H13 = 400;
+                    comboBox20.Text = System.Convert.ToString(H13);
+                    L3 = 330;
+                    comboBox21.Text = System.Convert.ToString(L3);
+                    comboBox22.Text = System.Convert.ToString(L4);
+                    comboBox23.Text = System.Convert.ToString(S);
+                    OtvG = 65;
+                    comboBox24.Text = System.Convert.ToString(OtvG);
+                    comboBox25.Text = System.Convert.ToString(OtvG);
+                     OtvL = 250;
+                    comboBox26.Text = System.Convert.ToString(OtvL);
+                    dlin = 7;
+                    vis = 12;
+                    B1 = 20;
+                    comboBox27.Text = System.Convert.ToString(B1);
+                    B2 = 10;
+                    comboBox28.Text = System.Convert.ToString(B2);
+                    B3 = 20;
+                    comboBox29.Text = System.Convert.ToString(B3);
+                    T1 = 10;
+                    comboBox30.Text = System.Convert.ToString(T1);
+                    T2 = 40;
+                    comboBox31.Text = System.Convert.ToString(T2);
+                    T3 = 80;
+                    comboBox32.Text = System.Convert.ToString(T3);
+                    T4 = 60;
+                    comboBox33.Text = System.Convert.ToString(T4);
+                    d = 24;
+                    comboBox34.Text = System.Convert.ToString(d);
+
+
+                    X = 200;
+                    Y = 200;
+                    vis = 3;
+                    Otv = 65;
+                    comboBox71.SelectedIndex = 1;
+                    comboBox72.SelectedIndex = 1;
+                    comboBox73.SelectedIndex = 1;
+                    break;
+                case 2:
+                    D = 1200;
+                    comboBox1.Text = System.Convert.ToString(D);
+                    H1 = 455;
+                    H11 = 1200;
+                    comboBox2.Text = System.Convert.ToString(H11);
+                    H3 = 250;
+                    comboBox3.Text = System.Convert.ToString(H3);
+                    H5 = 1300;
+                    comboBox4.Text = System.Convert.ToString(H5);
+                    H6 = 1450;
+                    comboBox5.Text = System.Convert.ToString(H6);
+                    S2 = 23;
+                    comboBox6.Text = System.Convert.ToString(S2);
+                    D1 = 1300;
+                    comboBox7.Text = System.Convert.ToString(D1);
+                    S3 = 8;
+                    comboBox8.Text = System.Convert.ToString(S3);
+                    H7 = 258;
+                    comboBox9.Text = System.Convert.ToString(H7);
+                    D2 = 850;
+                    comboBox10.Text = System.Convert.ToString(D2);
+                    H4 = 755;
+                    L4 = 92;
+                    comboBox11.Text = System.Convert.ToString(L4);
+                    H12 = 205;
+                    comboBox12.Text = System.Convert.ToString(H12);
+                    L2 = 290;
+                    S1 = 10;
+                    comboBox13.Text = System.Convert.ToString(S1);
+                    S = 21;
+                    comboBox14.Text = System.Convert.ToString(S);
+                    Otv = 100;
+                    comboBox15.Text = System.Convert.ToString(Otv);
+                    OtvD = 100;
+                    comboBox17.Text = System.Convert.ToString(OtvD);
+                    comboBox18.Text = System.Convert.ToString(D);
+                    H9 = 305;
+                    comboBox19.Text = System.Convert.ToString(H9);
+                    H13 = 520;
+                    comboBox20.Text = System.Convert.ToString(H13);
+                    L3 = 420;
+                    comboBox21.Text = System.Convert.ToString(L3);
+                    comboBox22.Text = System.Convert.ToString(L4);
+                    comboBox23.Text = System.Convert.ToString(S);
+                    OtvG = 100;
+                    comboBox24.Text = System.Convert.ToString(OtvG);
+                    comboBox25.Text = System.Convert.ToString(OtvG);
+                     OtvL = 300.400;
+                    comboBox26.Text = System.Convert.ToString(OtvL);
+                    dlin = 10;
+                    vis = 15;
+                    B1 = 22;
+                    comboBox27.Text = System.Convert.ToString(B1);
+                    B2 = 15;
+                    comboBox28.Text = System.Convert.ToString(B2);
+                    B3 = 30;
+                    comboBox29.Text = System.Convert.ToString(B3);
+                    T1 = 15;
+                    comboBox30.Text = System.Convert.ToString(T1);
+                    T2 = 60;
+                    comboBox31.Text = System.Convert.ToString(T2);
+                    T3 = 100;
+                    comboBox32.Text = System.Convert.ToString(T3);
+                    T4 = 80;
+                    comboBox33.Text = System.Convert.ToString(T4);
+                    d = 24;
+                    comboBox34.Text = System.Convert.ToString(d);
+
+
+                    X = 250;
+                    Y = 350;
+                    vis = 6;
+                    Otv = 100;
+                    comboBox71.SelectedIndex = 2;
+                    comboBox72.SelectedIndex = 2;
+                    comboBox73.SelectedIndex = 2;
+                    break;
+                case 3:
+                    D = 1400;
+                    comboBox1.Text = System.Convert.ToString(D);
+                    H1 = 455;
+                    H11 = 1450;
+                    comboBox2.Text = System.Convert.ToString(H11);
+                    H3 = 250;
+                    comboBox3.Text = System.Convert.ToString(H3);
+                    H5 = 1530;
+                    comboBox4.Text = System.Convert.ToString(H5);
+                    H6 = 1700;
+                    comboBox5.Text = System.Convert.ToString(H6);
+                    S2 = 26;
+                    comboBox6.Text = System.Convert.ToString(S2);
+                    D1 = 1500;
+                    comboBox7.Text = System.Convert.ToString(D1);
+                    S3 = 8;
+                    comboBox8.Text = System.Convert.ToString(S3);
+                    H7 = 292;
+                    comboBox9.Text = System.Convert.ToString(H7);
+                    D2 = 950;
+                    comboBox10.Text = System.Convert.ToString(D2);
+                    H4 = 805;
+                    L4 = 104;
+                    comboBox11.Text = System.Convert.ToString(L4);
+                    H12 = 205;
+                    comboBox12.Text = System.Convert.ToString(H12);
+                    L2 = 290;
+                    S1 = 10;
+                    comboBox13.Text = System.Convert.ToString(S1);
+                    S = 24;
+                    comboBox14.Text = System.Convert.ToString(S);
+                    Otv = 100;
+                    comboBox15.Text = System.Convert.ToString(Otv);
+                    OtvD = 100;
+                    comboBox17.Text = System.Convert.ToString(OtvD);
+                    comboBox18.Text = System.Convert.ToString(D);
+                    H9 = 330;
+                    comboBox19.Text = System.Convert.ToString(H9);
+                    H13 = 535;
+                    comboBox20.Text = System.Convert.ToString(H13);
+                    L3 = 460;
+                    comboBox21.Text = System.Convert.ToString(L3);
+                    comboBox22.Text = System.Convert.ToString(L4);
+                    comboBox23.Text = System.Convert.ToString(S);
+                    OtvG = 100;
+                    comboBox24.Text = System.Convert.ToString(OtvG);
+                    comboBox25.Text = System.Convert.ToString(OtvG);
+                     OtvL = 300.400;
+                    comboBox26.Text = System.Convert.ToString(OtvL);
+                    dlin = 13;
+                    vis = 18;
+                    B1 = 24;
+                    comboBox27.Text = System.Convert.ToString(B1);
+                    B2 = 15;
+                    comboBox28.Text = System.Convert.ToString(B2);
+                    B3 = 30;
+                    comboBox29.Text = System.Convert.ToString(B3);
+                    T1 = 15;
+                    comboBox30.Text = System.Convert.ToString(T1);
+                    T2 = 60;
+                    comboBox31.Text = System.Convert.ToString(T2);
+                    T3 = 100;
+                    comboBox32.Text = System.Convert.ToString(T3);
+                    T4 = 80;
+                    comboBox33.Text = System.Convert.ToString(T4);
+                    d = 24;
+                    comboBox34.Text = System.Convert.ToString(d);
+
+
+                    X = 250;
+                    Y = 350;
+                    vis = 9;
+                    Otv = 100;
+                    comboBox71.SelectedIndex = 3;
+                    comboBox72.SelectedIndex = 3;
+                    comboBox73.SelectedIndex = 3;
+                    break;
+
+                default:
+                    break;
+            }
+        }     
+        private void comboBox71_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox71.SelectedIndex)
+            {
+                case 0:
+                    comboBox70.SelectedIndex = 0;
+                    break;
+                case 1:
+                    comboBox70.SelectedIndex = 1;
+                    break;
+                case 2:
+                    comboBox70.SelectedIndex = 2;
+                    break;
+                case 3:
+                    comboBox70.SelectedIndex = 3;
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void comboBox72_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox72.SelectedIndex)
+            {
+                case 0:
+                    comboBox70.SelectedIndex = 0;
+                    break;
+                case 1:
+                    comboBox70.SelectedIndex = 1;
+                    break;
+                case 2:
+                    comboBox70.SelectedIndex = 2;
+                    break;
+                case 3:
+                    comboBox70.SelectedIndex = 3;
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void comboBox73_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (comboBox73.SelectedIndex)
+            {
+                case 0:
+                    comboBox70.SelectedIndex = 0;
+                    break;
+                case 1:
+                    comboBox70.SelectedIndex = 1;
+                    break;
+                case 2:
+                    comboBox70.SelectedIndex = 2;
+                    break;
+                case 3:
+                    comboBox70.SelectedIndex = 3;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Сохранить_Модель(string oPartDocName, string Text)
+        {
+            saveFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            saveFileDialog1.Title = Text;
+            saveFileDialog1.FileName = oPartDoc[oPartDocName].DisplayName;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(saveFileDialog1.FileName))
+                {
+                    oPartDoc[oPartDocName].SaveAs(saveFileDialog1.FileName, false);
+                    oFileName[oPartDocName] = saveFileDialog1.FileName;
+                }
+            }
+        }
+        #endregion 
+        private void button1_Click(object sender, EventArgs e) //запуск инвентора
+        {
+            System.Windows.Forms.MessageBox.Show("Запуск Инвентора может занять несколько минут!");
+            System.Diagnostics.Process.Start("D:/AUTODESK INVENTOR 2015/Inventor 2015/Bin/Inventor.exe");
+        }
+        private void button2_Click(object sender, EventArgs e) //днище
+        {
+            try
+            {
+                //Проверка наличия активного состояния Инветора. 
+                ThisApplication = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+            }
+            catch
+            {
+                // Если Инвентор не запущен, то возвращаемся в основную программу.
+                System.Windows.Forms.MessageBox.Show("Запустите Инвентор!", "Сообщение");
+                return;
+            }
+            D = D / 10;
+            D1 = D1 / 10;
+            D2 = D2 / 10;
+            D3 = D3 / 10;
+            H = H / 10;
+            H1 = H1 / 10;
+            H2 = H2 / 10;
+            H3 = H3 / 10;
+            H4 = H4 / 10;
+            H5 = H5 / 10;
+            H6 = H6 / 10;
+            H7 = H7 / 10;
+            H8 = H8 / 10;
+            H9 = H9 / 10;
+            H10 = H10 / 10;
+            L = L / 10;
+            L1 = L1 / 10;
+            L2 = L2 / 10;
+            L3 = L3 / 10;
+            S = S / 10;
+            S1 = S1 / 10;
+            S2 = S2 / 10;
+            S3 = S3 / 10;
+            d = d / 10;
+            Otv = Otv / 20;
+            Inventor.Application oApp;
+            oApp = (Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application");
+            // Создание нового документа в среде Inventor.
+            PartDocument oPartDoc = default(PartDocument);
+            oPartDoc = (PartDocument)oApp.Documents.Add(DocumentTypeEnum.kPartDocumentObject, oApp.FileManager.GetTemplateFile(DocumentTypeEnum.kPartDocumentObject));
+
+            // Определение компонентов oPartDoc.
+            PartComponentDefinition oCompDef = default(PartComponentDefinition);
+            oCompDef = oPartDoc.ComponentDefinition;
+
+            // Создание эскизной плоскости X-Y.
+            PlanarSketch oSketch = default(PlanarSketch);
+            oSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+
+            // Создание файла эскиза.
+            TransientGeometry oTransGeom = default(TransientGeometry);
+            oTransGeom = oApp.TransientGeometry;
+            Transaction oTrans = default(Transaction);
+            oTrans = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+            SketchPoint[] point = new SketchPoint[200];
+            point[1] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv, 0.5), false);
+            point[2] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2-0.5, 0.5), false);
+            point[3] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + 2 * S2, H6 - H5 - S2), false);
+            point[4] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2, H6 / 4), false);
+            point[5] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2, H6 - H5), false);
+            point[6] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2, H6 / 4), false);
+            point[8] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2, H6 - H3), false);
+            point[9] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6 - H3), false);
+            point[10] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6 - H3 + S2 ), false);
+            point[11] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2, H6 - H3 + S2), false);
+            point[12] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2, H6 - S2 ), false);
+            point[13] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6 - S2 ), false);
+            point[14] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6), false);
+            point[15] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2, H6), false);
+            point[101] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 4, H6 - H5 + H6 / 25 - S2), false);
+            point[102] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 - 2 * S2-vis/4, H6 / 4 - H6 / 30), false);
+            point[103] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 4, H6 - H5 - S2 * 2 + H6 / 25), false);
+            point[104] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 - S2-vis/4, H6 / 4 - H6 / 40 - S2), false);
+            
+
+            SketchLine[] line = new SketchLine[50];
+            line[0] = oSketch.SketchLines.AddByTwoPoints(oTransGeom.CreatePoint2d(0, 0), oTransGeom.CreatePoint2d(0, 100));
+
+            line[1] = oSketch.SketchLines.AddByTwoPoints(point[1], point[2]);
+            line[2] = oSketch.SketchLines.AddByTwoPoints(point[8], point[9]);
+            line[3] = oSketch.SketchLines.AddByTwoPoints(point[9], point[10]);
+            line[4] = oSketch.SketchLines.AddByTwoPoints(point[10], point[11]);
+            line[5] = oSketch.SketchLines.AddByTwoPoints(point[11], point[12]);
+            line[6] = oSketch.SketchLines.AddByTwoPoints(point[12], point[13]);
+            line[7] = oSketch.SketchLines.AddByTwoPoints(point[13], point[14]);
+            line[8] = oSketch.SketchLines.AddByTwoPoints(point[14], point[15]);
+            
+            ObjectCollection[] Эллипс = new ObjectCollection[20];
+            Эллипс[1] = ThisApplication.TransientObjects.CreateObjectCollection(null);
+            Эллипс[2] = ThisApplication.TransientObjects.CreateObjectCollection();
+
+            SketchSpline[] Spline = new SketchSpline[20];
+            Эллипс[1].Add(point[5]);
+            Эллипс[1].Add(point[101]);
+            Эллипс[1].Add(point[102]);
+            Эллипс[1].Add(point[6]);
+            Spline[1] = oSketch.SketchSplines.Add(Эллипс[1]);
+            line[22] = oSketch.SketchLines.AddByTwoPoints(point[1], Эллипс[1][1]);
+            line[23] = oSketch.SketchLines.AddByTwoPoints(point[15], Эллипс[1][4]);
+
+            Эллипс[2].Add(point[3]);
+            Эллипс[2].Add(point[103]);
+            Эллипс[2].Add(point[104]);
+            Эллипс[2].Add(point[4]);
+            Spline[2] = oSketch.SketchSplines.Add(Эллипс[2]);
+            line[24] = oSketch.SketchLines.AddByTwoPoints(point[2], Эллипс[2][1]);
+            line[25] = oSketch.SketchLines.AddByTwoPoints(point[8], Эллипс[2][4]);   //у элипса первая переменная это номер эллипса, вторая это номер точки добавленной в эллипс
+            Profile oProfile1 = (Profile)oSketch.Profiles.AddForSolid();
+            RevolveFeature Вращение = oCompDef.Features.RevolveFeatures.AddFull(oProfile1, line[0], 0);
+
+            //круговые вырезы под болты 5*            
+            WorkPlane oWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6, false);
+            oWorkPlane3.Visible = false;
+            PlanarSketch oSketch1 = oCompDef.Sketches.Add(oWorkPlane3, false);
+            point[20] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D / 2 + S2 * 4-3), 0), false);
+            SketchCircle[] Circles = new SketchCircle[30];         
+            Circles[1] = oSketch1.SketchCircles.AddByCenterRadius(point[20], 1);
+            Profile oProfile2 = (Profile)oSketch1.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile2, S2, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile2);
+         
+            //массив отверстий под болты
+            ObjectCollection ombolti = ThisApplication.TransientObjects.CreateObjectCollection();
+            ombolti.Add(oExtrudeDef1);
+            WorkAxis omОсь = oCompDef.WorkAxes[2];
+            CircularPatternFeature Массив = oCompDef.Features.CircularPatternFeatures.Add(ombolti, omОсь, false, Kolb3, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+
+            oTrans.End();
+
+            Profile oProfile = default(Profile);
+            oProfile = oSketch.Profiles.AddForSolid();
+
+
+
+            saveFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            saveFileDialog1.Title = Text;
+            saveFileDialog1.FileName = oPartDoc.DisplayName;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(saveFileDialog1.FileName))
+                {
+                    oPartDoc.SaveAs(saveFileDialog1.FileName, false);
+                    oFileName["Днище"] = saveFileDialog1.FileName;
+                }
+            }
+
+            D = D * 10;
+            D1 = D1 * 10;
+            D2 = D2 * 10;
+            D3 = D3 * 10;
+            H = H * 10;
+            H1 = H1 * 10;
+            H2 = H2 * 10;
+            H3 = H3 * 10;
+            H4 = H4 * 10;
+            H5 = H5 * 10;
+            H6 = H6 * 10;
+            H7 = H7 * 10;
+            H8 = H8 * 10;
+            H9 = H9 * 10;
+            H10 = H10 * 10;
+            L = L * 10;
+            L1 = L1 * 10;
+            L2 = L2 * 10;
+            L3 = L3 * 10;
+            S = S * 10;
+            S1 = S1 * 10;
+            S2 = S2 * 10;
+            S3 = S3 * 10;
+            d = d * 10;
+            Otv = Otv * 20;
+        }
+        private void button3_Click(object sender, EventArgs e) //рубашка
+        {
+            D = D / 10; D1 = D1 / 10; D2 = D2 / 10; D3 = D3 / 10; H = H / 10; H1 = H1 / 10; H2 = H2 / 10; H3 = H3 / 10; H4 = H4 / 10; H5 = H5 / 10; H6 = H6 / 10; H7 = H7 / 10; H8 = H8 / 10;
+            H9 = H9 / 10; H10 = H10 / 10; L = L / 10; L1 = L1 / 10; L2 = L2 / 10; L3 = L3 / 10; S = S / 10; S1 = S1 / 10; S2 = S2 / 10; S3 = S3 / 10; d = d / 10; Otv = Otv / 20;
+            try
+            {
+                //Проверка наличия активного состояния Инветора. 
+                ThisApplication = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+
+            }
+
+            catch
+            {
+                // Если Инвентор не запущен, то возвращаемся в основную программу.
+                System.Windows.Forms.MessageBox.Show("Запустите Инвентор!", "Сообщение");
+                return;
+            }
+            Inventor.Application oApp;
+            oApp = (Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application");
+            // Создание нового документа в среде Inventor.
+            PartDocument oPartDoc = default(PartDocument);
+            oPartDoc = (PartDocument)oApp.Documents.Add(DocumentTypeEnum.kPartDocumentObject, oApp.FileManager.GetTemplateFile(DocumentTypeEnum.kPartDocumentObject));
+
+            // Определение компонентов oPartDoc.
+            PartComponentDefinition oCompDef = default(PartComponentDefinition);
+            oCompDef = oPartDoc.ComponentDefinition;
+
+            // Создание эскизной плоскости X-Y.
+            PlanarSketch oSketch = default(PlanarSketch);
+            oSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+
+            // Создание файла эскиза.
+            TransientGeometry oTransGeom = default(TransientGeometry);
+            oTransGeom = oApp.TransientGeometry;
+            Transaction oTrans = default(Transaction);
+            oTrans = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+
+            SketchPoint[] point = new SketchPoint[200];
+            SketchLine[] line = new SketchLine[50];
+            SketchCircle[] Circles = new SketchCircle[10];
+            point[1] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2, 0), false);
+            point[2] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + 2 * S2, H6 - H5 - (D1 - D) / 2), false);
+            point[3] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6 - H3), false);
+            point[4] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2, H6 - H3), false);
+            point[5] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + S3, H6 / 4), false);
+            point[6] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2, H6 / 4), false);
+            point[7] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6 - H3 - S3), false);
+            point[8] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + S3, H6 - H3 - S3), false);
+            point[9] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2 + S3, 0), false);
+            point[10] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + 2 * S2 + S3, H6 - H5 - (D1 - D) / 2 - S3), false);
+            point[16] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 * Otv + 2 * S2 + S3, 0), false);
+            point[11] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 * Otv + 2 * S2 + S3, S3), false);
+            point[12] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2 + S3, S3), false);
+            Circles[2] = oSketch.SketchCircles.AddByCenterRadius(oTransGeom.CreatePoint2d(Otv +1.6* S2, H6 - H5 - (D1 - D) / 2-5*S3), 0.5);
+            Circles[3] = oSketch.SketchCircles.AddByCenterRadius(oTransGeom.CreatePoint2d(Otv + 1.3 * S2, H6 - H5 - (D1 - D) / 2 - 10 * S3), 0.5);
+
+
+            point[101] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 4, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2), false);
+            point[102] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 - S2 - (D1 - D) / 2, H6 / 4 - H6 / 40 - S2 - (D1 - D) / 2 + 1.5 * S3), false);
+            point[103] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 4, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 - S3), false);
+            point[104] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 - S2 - (D1 - D) / 2, H6 / 4 - H6 / 40 - S2 - (D1 - D) / 2 + 0.5 * S3), false);
+
+            //снизу круг для болтов
+            PlanarSketch oSketch1 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            point[14] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(0, - 2*S3), false);
+            point[17] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(2 * Otv + 2 * S2 + S3, 0), false);
+            point[13] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(2 * Otv + 2 * S2 + S3, -2*S3), false);
+            point[15] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 0), false);
+            line[11] = oSketch1.SketchLines.AddByTwoPoints(oTransGeom.CreatePoint2d(0, 0), oTransGeom.CreatePoint2d(0, 100));
+            line[1] = oSketch1.SketchLines.AddByTwoPoints(point[17], point[13]);
+            line[2] = oSketch1.SketchLines.AddByTwoPoints(point[13], point[14]);
+            line[3] = oSketch1.SketchLines.AddByTwoPoints(point[14], point[15]);
+            line[4] = oSketch1.SketchLines.AddByTwoPoints(point[15], point[17]);
+            Profile oProfile3 = (Profile)oSketch1.Profiles.AddForSolid();
+            RevolveFeature Вращение3 = oCompDef.Features.RevolveFeatures.AddFull(oProfile3, line[11], 0);
+
+
+            
+            line[0] = oSketch.SketchLines.AddByTwoPoints(oTransGeom.CreatePoint2d(0, 0), oTransGeom.CreatePoint2d(0, 100));
+
+            line[1] = oSketch.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[2] = oSketch.SketchLines.AddByTwoPoints(point[3], point[7]);
+            line[3] = oSketch.SketchLines.AddByTwoPoints(point[7], point[8]);
+            line[4] = oSketch.SketchLines.AddByTwoPoints(point[2], point[1]);
+            line[5] = oSketch.SketchLines.AddByTwoPoints(point[1], point[9]);
+            line[6] = oSketch.SketchLines.AddByTwoPoints(point[9], point[10]);
+            line[7] = oSketch.SketchLines.AddByTwoPoints(point[9], point[16]);
+            line[8] = oSketch.SketchLines.AddByTwoPoints(point[16], point[11]);
+            line[9] = oSketch.SketchLines.AddByTwoPoints(point[11], point[12]);
+            line[10] = oSketch.SketchLines.AddByTwoPoints(point[12], point[9]);
+
+
+            ObjectCollection[] Эллипс = new ObjectCollection[20];
+            Эллипс[1] = ThisApplication.TransientObjects.CreateObjectCollection(null);
+            Эллипс[2] = ThisApplication.TransientObjects.CreateObjectCollection();
+
+            SketchSpline[] Spline = new SketchSpline[20];
+            Эллипс[1].Add(point[2]);
+            Эллипс[1].Add(point[101]);
+            Эллипс[1].Add(point[102]);
+            Эллипс[1].Add(point[6]);
+            Spline[1] = oSketch.SketchSplines.Add(Эллипс[1]);
+            line[23] = oSketch.SketchLines.AddByTwoPoints(point[4], Эллипс[1][4]);
+
+            Эллипс[2].Add(point[10]);
+            Эллипс[2].Add(point[103]);
+            Эллипс[2].Add(point[104]);
+            Эллипс[2].Add(point[5]);
+            Spline[2] = oSketch.SketchSplines.Add(Эллипс[2]);
+            line[25] = oSketch.SketchLines.AddByTwoPoints(point[8], Эллипс[2][4]);   //у элипса первая переменная это номер эллипса, вторая это номер точки добавленной в эллипс       
+            Profile oProfile2 = (Profile)oSketch.Profiles.AddForSolid();
+            RevolveFeature Вращение = oCompDef.Features.RevolveFeatures.AddFull(oProfile2, line[0], 0);
+            //круглое отверстия дляфланца
+            
+            PlanarSketch oSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[1]);
+            point[50] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d( H6 - H1,0), false);
+            Circles[1] = oSketch2.SketchCircles.AddByCenterRadius(point[50], 2);
+            Profile oProfile4 = (Profile)oSketch2.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile4, 200, PartFeatureExtentDirectionEnum.kSymmetricExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile4);
+            //круглое отверстие для нижнего фланца
+            PlanarSketch oSketch3 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+            point[60] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(L2, 0), false);
+            Circles[1] = oSketch3.SketchCircles.AddByCenterRadius(point[60], 2);
+            Profile oProfile5 = (Profile)oSketch3.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+             (oProfile5, 200, PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile5);
+            //отверстия для болтов под Д
+            WorkPlane oWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], -2*S3, false);
+            oWorkPlane3.Visible = false;
+            PlanarSketch oSketch4 = oCompDef.Sketches.Add(oWorkPlane3, false);
+            point[20] = oSketch4.SketchPoints.Add(oTransGeom.CreatePoint2d(2 * Otv + 2 * S2 + S3-2, 0), false);
+            Circles[1] = oSketch4.SketchCircles.AddByCenterRadius(point[20], 0.8);
+            Profile oProfile6 = (Profile)oSketch4.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef4 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile6, 3*S3, PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile6);    
+            //массив отверстий под болты
+            ObjectCollection bolti = ThisApplication.TransientObjects.CreateObjectCollection();
+            bolti.Add(oExtrudeDef4);
+            WorkAxis Ось = oCompDef.WorkAxes[2];
+            CircularPatternFeature Массив = oCompDef.Features.CircularPatternFeatures.Add(bolti, Ось, false, Kolb1, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+
+            
+            oTrans.End();
+            Profile oProfile = default(Profile);
+            oProfile = oSketch.Profiles.AddForSolid();
+            saveFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            saveFileDialog1.Title = Text;
+            saveFileDialog1.FileName = oPartDoc.DisplayName;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(saveFileDialog1.FileName))
+                {
+                    oPartDoc.SaveAs(saveFileDialog1.FileName, false);
+                    oFileName["Рубашка"] = saveFileDialog1.FileName;
+                }
+            }
+
+            D = D * 10;
+            D1 = D1 * 10;
+            D2 = D2 * 10;
+            D3 = D3 * 10;
+            H = H * 10;
+            H1 = H1 * 10;
+            H2 = H2 * 10;
+            H3 = H3 * 10;
+            H4 = H4 * 10;
+            H5 = H5 * 10;
+            H6 = H6 * 10;
+            H7 = H7 * 10;
+            H8 = H8 * 10;
+            H9 = H9 * 10;
+            H10 = H10 * 10;
+            L = L * 10;
+            L1 = L1 * 10;
+            L2 = L2 * 10;
+            L3 = L3 * 10;
+            S = S * 10;
+            S1 = S1 * 10;
+            S2 = S2 * 10;
+            S3 = S3 * 10;
+            d = d * 10;
+            Otv = Otv * 20;
+        }
+        private void button4_Click(object sender, EventArgs e) //крышка
+        {
+            D = D / 10; D1 = D1 / 10; D2 = D2 / 10; D3 = D3 / 10; H = H / 10; H1 = H1 / 10; H2 = H2 / 10; H3 = H3 / 10; H4 = H4 / 10; H5 = H5 / 10; H6 = H6 / 10; H7 = H7 / 10; H8 = H8 / 10;
+            H9 = H9 / 10; H10 = H10 / 10; L = L / 10; L1 = L1 / 10; L2 = L2 / 10; L3 = L3 / 10; S = S / 10; S1 = S1 / 10; S2 = S2 / 10; S3 = S3 / 10; d = d / 10; Otv = Otv / 20; X = X / 10; Y = Y / 10;
+            try
+            {
+                //Проверка наличия активного состояния Инветора. 
+                ThisApplication = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+            }
+
+            catch
+            {
+                // Если Инвентор не запущен, то возвращаемся в основную программу.
+                System.Windows.Forms.MessageBox.Show("Запустите Инвентор!", "Сообщение");
+                return;
+            }
+            Inventor.Application oApp;
+            oApp = (Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application");
+
+            // Создание нового документа в среде Inventor.
+            PartDocument oPartDoc = (PartDocument)oApp.Documents.Add(DocumentTypeEnum.kPartDocumentObject, oApp.FileManager.GetTemplateFile(DocumentTypeEnum.kPartDocumentObject));
+            //oPartDoc.DisplayName = "Эллипсоид";
+            // Определение компонентов oPartDoc.
+            PartComponentDefinition oCompDef = oPartDoc.ComponentDefinition;
+
+            // Создание эскизной плоскости X-Y.
+            PlanarSketch oSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+             // Создание файла эскиза.
+            TransientGeometry oTransGeom = oApp.TransientGeometry;
+            Transaction oTrans1 = oApp.TransactionManager.StartTransaction(oApp.ActiveDocument, "Create Triangle Sample");
+
+
+            SketchPoint[] point = new SketchPoint[200];
+            point[1] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv, H6 + H7+2*S3), false);
+            point[2] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv+S2+4*S3+2, H6 + H7 +2*S3), false);
+            point[3] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv+S2+4*S3+2, H6 + H7 ), false);
+            point[4] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2, H6 + H7 ), false);
+            point[5] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2, H6 + H7 - S2), false);
+            point[6] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv, H6 + H7 - 2 * S2), false);
+            point[7] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2, H6 + S2), false);
+            point[8] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6 + S2), false);
+            point[9] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4, H6), false);
+            point[10] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2, H6), false);
+              
+            point[100] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 6, H6 + H7 - S2 * 1.5), false);
+            point[101] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2.8, H6 + H7 / 2), false);
+            point[102] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 6, H6 + H7 - S2 * 2.5), false);
+            point[103] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2.8, H6 + H7 / 2 - S2), false);
+
+            SketchLine[] line = new SketchLine[50];
+            line[0] = oSketch.SketchLines.AddByTwoPoints(oTransGeom.CreatePoint2d(0, 0), oTransGeom.CreatePoint2d(0, 100));
+
+            line[1] = oSketch.SketchLines.AddByTwoPoints(point[1], point[2]);
+            line[2] = oSketch.SketchLines.AddByTwoPoints(point[2], point[3]);
+            line[3] = oSketch.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[4] = oSketch.SketchLines.AddByTwoPoints(point[4], point[5]);
+            line[5] = oSketch.SketchLines.AddByTwoPoints(point[1], point[6]);
+            line[6] = oSketch.SketchLines.AddByTwoPoints(point[7], point[8]);
+            line[7] = oSketch.SketchLines.AddByTwoPoints(point[8], point[9]);
+            line[8] = oSketch.SketchLines.AddByTwoPoints(point[9], point[10]);
+             
+            ObjectCollection[] Эллипс = new ObjectCollection[20];
+            Эллипс[1] = ThisApplication.TransientObjects.CreateObjectCollection(null);
+            Эллипс[2] = ThisApplication.TransientObjects.CreateObjectCollection();
+            Эллипс[3] = ThisApplication.TransientObjects.CreateObjectCollection();
+            Эллипс[4] = ThisApplication.TransientObjects.CreateObjectCollection();
+            Эллипс[5] = ThisApplication.TransientObjects.CreateObjectCollection();
+
+            SketchSpline[] Spline = new SketchSpline[20];
+            Эллипс[1].Add(point[5]);
+            Эллипс[1].Add(point[100]);
+            Эллипс[1].Add(point[101]);
+            Эллипс[1].Add(point[7]);
+            Spline[1] = oSketch.SketchSplines.Add(Эллипс[1]);
+
+            Эллипс[2].Add(point[6]);
+            Эллипс[2].Add(point[102]);
+            Эллипс[2].Add(point[103]);
+            Эллипс[2].Add(point[10]);
+            Spline[2] = oSketch.SketchSplines.Add(Эллипс[2]);
+            //у элипса первая переменная это номер эллипса, вторая это номер точки добавленной в эллипс
+
+            oTrans1.End();
+
+            Profile oProfile2 = (Profile)oSketch.Profiles.AddForSolid();
+            RevolveFeature Вращение = oCompDef.Features.RevolveFeatures.AddFull(oProfile2, line[0], 0);
+
+            //вырезы под трубы
+
+            WorkPlane oWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6, false);
+            oWorkPlane3.Visible = false;
+            PlanarSketch oSketch1 = oCompDef.Sketches.Add(oWorkPlane3, false);
+            PlanarSketch oSketch2 = oCompDef.Sketches.Add(oWorkPlane3, false);
+            PlanarSketch oSketch10 = oCompDef.Sketches.Add(oWorkPlane3, false);
+            Transaction oTrans2 = ThisApplication.TransactionManager.StartTransaction(ThisApplication.ActiveDocument, "Create Sample2");
+            SketchCircle[] Circles = new SketchCircle[30];
+            point[50] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-D2 / 2, 0), false);
+            point[53] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(-D2 / 2, 0), false);
+            point[99] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, 0), false);
+            point[98] = oSketch10.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, 0), false);
+            point[51] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-0.1736 * D2 / 2, D2 / 2 * 0.9848), false);
+            point[52] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-0.1736 * D2 / 2, -D2 / 2 * 0.9848), false);
+            point[54] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(-0.1736 * D2 / 2, D2 / 2 * 0.9848), false);
+            point[55] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(-0.1736 * D2 / 2, -D2 / 2 * 0.9848), false);
+            Circles[1] = oSketch1.SketchCircles.AddByCenterRadius(point[50], Otv);
+            Circles[4] = oSketch2.SketchCircles.AddByCenterRadius(point[53], 1.25*Otv);
+            Circles[5] = oSketch2.SketchCircles.AddByCenterRadius(point[54], 1.25*Otv);
+            Circles[6] = oSketch2.SketchCircles.AddByCenterRadius(point[55], 1.25*Otv);
+            Circles[2] = oSketch1.SketchCircles.AddByCenterRadius(point[51], Otv);
+            Circles[3] = oSketch1.SketchCircles.AddByCenterRadius(point[52], Otv);
+            //вырез под эллептическую крышку
+            UnitVector2d[] oEllipse = new UnitVector2d[10];     
+            SketchEllipse[]  SketchEllipsesS = new  SketchEllipse[10];
+            SketchEllipsesS[2] = oSketch1.SketchEllipses.Add(point[99], oTransGeom.CreateUnitVector2d(0, 1), Y/2, X/2);
+            SketchEllipsesS[3] = oSketch10.SketchEllipses.Add(point[98], oTransGeom.CreateUnitVector2d(0, 1), 1.2*Y/2, 1.2*X/2);
+            oTrans2.End();
+            Profile oProfile3 = (Profile)oSketch1.Profiles.AddForSolid();
+            Profile oProfile5 = (Profile)oSketch2.Profiles.AddForSolid(); //для трубы следующие 2 строчки
+            Profile oProfile10 = (Profile)oSketch10.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef10 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile10, H7 + 0.5 * S3, PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile10);
+            ExtrudeFeature oExtrudeDef5 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent 
+            (oProfile5,17+vis,PartFeatureExtentDirectionEnum.kPositiveExtentDirection,PartFeatureOperationEnum.kJoinOperation,oProfile5);
+            ExtrudeFeature oExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile3,200,PartFeatureExtentDirectionEnum.kPositiveExtentDirection,PartFeatureOperationEnum.kCutOperation,oProfile3);
+            //эллептическая крышка Л
+            WorkPlane oWorkPlane6 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2],H6 + H7+0.5*S3, false);
+            oWorkPlane6.Visible = false;
+            PlanarSketch oSketch11 = oCompDef.Sketches.Add(oWorkPlane6, false);
+            point[97] = oSketch11.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, 0), false);
+            SketchEllipsesS[3] = oSketch11.SketchEllipses.Add(point[97], oTransGeom.CreateUnitVector2d(0, 1), 0.9*Y , 0.9*X );
+            Profile oProfile11 = (Profile)oSketch11.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef6 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile11, 1.5*S3, PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile11);
+            ExtrudeFeature oExtrudeDef7 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (oProfile11, 1.5*S3, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile11);
+          
+            //ручка на крышке
+         
+            if ((comboBox70.Text == "0,4-12-01") || (comboBox70.Text == "0,63-0-12-01"))
+            {
+                WorkPlane oWorkPlane12 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 7 * S3, false);
+                oWorkPlane12.Visible = false;
+                PlanarSketch oSketch12 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[1] = oSketch12.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6, 0), false);
+                Circles[10] = oSketch12.SketchCircles.AddByCenterRadius(point[1], S1);
+                point[2] = oSketch12.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6, 0), false);
+                Circles[11] = oSketch12.SketchCircles.AddByCenterRadius(point[2], S1);
+                Profile oProfile12 = (Profile)oSketch12.Profiles.AddForSolid();
+                ExtrudeFeature oExtrudeDef12 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (oProfile12, 7 * S3, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile12);
+                PlanarSketch oSketch14 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[3] = oSketch14.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6, 0), false);
+                Circles[13] = oSketch14.SketchCircles.AddByCenterRadius(point[3], S1);
+                point[53] = oSketch14.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6-S1, 0), false);
+                point[54] = oSketch14.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6-S1, 10), false);
+                line[0] = oSketch14.SketchLines.AddByTwoPoints(point[53], point[54]);
+                Profile oProfile14 = (Profile)oSketch14.Profiles.AddForSolid();
+                RevolveFeature revolvefeature1 = oCompDef.Features.RevolveFeatures.AddByAngle(oProfile14, line[0], "90",
+    PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation);
+                PlanarSketch oSketch16 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[3] = oSketch16.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6, 0), false);
+                Circles[13] = oSketch16.SketchCircles.AddByCenterRadius(point[3], S1);
+                point[53] = oSketch16.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6 + S1, 0), false);
+                point[54] = oSketch16.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6 + S1, 10), false);
+                line[1] = oSketch16.SketchLines.AddByTwoPoints(point[53], point[54]);
+                Profile oProfile16 = (Profile)oSketch16.Profiles.AddForSolid();
+                RevolveFeature revolvefeature2 = oCompDef.Features.RevolveFeatures.AddByAngle(oProfile16, line[1], "90",
+    PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kJoinOperation);
+                WorkPlane oWorkPlane7 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[1], -(D2 / 2 - 6)-S1, false);
+                oWorkPlane7.Visible = false;
+                PlanarSketch oSketch13 = oCompDef.Sketches.Add(oWorkPlane7, false);
+                point[103] = oSketch13.SketchPoints.Add(oTransGeom.CreatePoint2d(H6 + H7 + 7 * S3+S1, 0), false);
+                Circles[10] = oSketch13.SketchCircles.AddByCenterRadius(point[103], S1);
+                Profile oProfile13 = (Profile)oSketch13.Profiles.AddForSolid();
+                ExtrudeFeature oExtrudeDef13 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (oProfile13, 12-2*S1, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile13);
+                //круговые отверстия под болты на Л
+                PlanarSketch oSketch18 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[22] = oSketch18.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * X,0), false);
+                Circles[1] = oSketch18.SketchCircles.AddByCenterRadius(point[22], 0.8);
+                Profile oProfile18 = (Profile)oSketch18.Profiles.AddForSolid();
+                ExtrudeFeature oExtrudeDef18 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (oProfile18, 3*S2, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile18);
+                PlanarSketch oSketch20 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+                point[153] = oSketch20.SketchPoints.Add(oTransGeom.CreatePoint2d(-D2 / 2, 0), false);
+                point[154] = oSketch20.SketchPoints.Add(oTransGeom.CreatePoint2d(-D2 / 2, 0.000001), false);
+                ObjectCollection bolti = ThisApplication.TransientObjects.CreateObjectCollection();
+                bolti.Add(oExtrudeDef18);
+                line[30] = oSketch20.SketchLines.AddByTwoPoints(point[153], point[154]);
+                WorkAxis Ось = oCompDef.WorkAxes.AddByLine(line[30], true);
+                CircularPatternFeature Массив = oCompDef.Features.CircularPatternFeatures.Add(bolti, Ось, false, Kolb4, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+   
+            }
+            if ((comboBox70.Text == "1,25-0-12-01") || (comboBox70.Text == "2,0-0-12-01"))
+            {
+                WorkPlane oWorkPlane12 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 7 * S3, false);
+                oWorkPlane12.Visible = false;
+                PlanarSketch oSketch12 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[1] = oSketch12.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6, 10), false);
+                Circles[10] = oSketch12.SketchCircles.AddByCenterRadius(point[1], S1);
+                point[2] = oSketch12.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6, 10), false);
+                Circles[11] = oSketch12.SketchCircles.AddByCenterRadius(point[2], S1);
+                point[3] = oSketch12.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6, -10), false);
+                Circles[12] = oSketch12.SketchCircles.AddByCenterRadius(point[3], S1);
+                point[4] = oSketch12.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6, -10), false);
+                Circles[13] = oSketch12.SketchCircles.AddByCenterRadius(point[4], S1);
+                Profile oProfile12 = (Profile)oSketch12.Profiles.AddForSolid();
+                ExtrudeFeature oExtrudeDef12 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (oProfile12, 7 * S3, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile12);
+                PlanarSketch oSketch14 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[5] = oSketch14.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6, 10), false);
+                Circles[14] = oSketch14.SketchCircles.AddByCenterRadius(point[5], S1);
+                point[53] = oSketch14.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6 - S1, 0), false);
+                point[54] = oSketch14.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6 - S1, 10), false);
+                line[0] = oSketch14.SketchLines.AddByTwoPoints(point[53], point[54]);
+                point[6] = oSketch14.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 6, -10), false);
+                Circles[15] = oSketch14.SketchCircles.AddByCenterRadius(point[6], S1);
+                Profile oProfile14 = (Profile)oSketch14.Profiles.AddForSolid();
+                RevolveFeature revolvefeature1 = oCompDef.Features.RevolveFeatures.AddByAngle(oProfile14, line[0], "90",
+    PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation);
+                PlanarSketch oSketch16 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[3] = oSketch16.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6, -10), false);
+                Circles[16] = oSketch16.SketchCircles.AddByCenterRadius(point[3], S1);
+                point[4] = oSketch16.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6, 10), false);
+                Circles[16] = oSketch16.SketchCircles.AddByCenterRadius(point[4], S1);
+                point[53] = oSketch16.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6 + S1, 0), false);
+                point[54] = oSketch16.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 6 + S1, 10), false);
+                line[1] = oSketch16.SketchLines.AddByTwoPoints(point[53], point[54]);
+                Profile oProfile16 = (Profile)oSketch16.Profiles.AddForSolid();
+                RevolveFeature revolvefeature2 = oCompDef.Features.RevolveFeatures.AddByAngle(oProfile16, line[1], "90",
+    PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kJoinOperation);
+                WorkPlane oWorkPlane7 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[1], -(D2 / 2 - 6) - S1, false);
+                oWorkPlane7.Visible = false;
+                PlanarSketch oSketch13 = oCompDef.Sketches.Add(oWorkPlane7, false);
+                point[103] = oSketch13.SketchPoints.Add(oTransGeom.CreatePoint2d(H6 + H7 + 7 * S3 + S1, 10), false);
+                Circles[10] = oSketch13.SketchCircles.AddByCenterRadius(point[103], S1);
+                point[104] = oSketch13.SketchPoints.Add(oTransGeom.CreatePoint2d(H6 + H7 + 7 * S3 + S1, -10), false);
+                Circles[10] = oSketch13.SketchCircles.AddByCenterRadius(point[104], S1);
+                Profile oProfile13 = (Profile)oSketch13.Profiles.AddForSolid();
+                ExtrudeFeature oExtrudeDef13 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (oProfile13, 12 - 2 * S1, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile13);
+                //отверстия для болтов под эллипс
+                PlanarSketch oSketch21 = oCompDef.Sketches.Add(oWorkPlane12, false);
+                point[1] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * 25, 0), false);
+                Circles[1] = oSketch21.SketchCircles.AddByCenterRadius(point[1], 0.8);
+                point[3] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * 22.91288, 0.8 * 14), false);
+                Circles[3] = oSketch21.SketchCircles.AddByCenterRadius(point[3], 0.8);
+                point[5] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * 15, 0.8 * 28), false);
+                Circles[5] = oSketch21.SketchCircles.AddByCenterRadius(point[5], 0.8);
+                point[7] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * 0, 0.8 * 35), false);
+                Circles[7] = oSketch21.SketchCircles.AddByCenterRadius(point[7], 0.8);
+                point[9] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 0.8 * 15, 0.8 * 28), false);
+                Circles[9] = oSketch21.SketchCircles.AddByCenterRadius(point[9], 0.8);
+                point[11] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 0.8 * 22.91288, 0.8 * 14), false);
+                Circles[11] = oSketch21.SketchCircles.AddByCenterRadius(point[11], 0.8);
+                point[13] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 0.8 * 25, 0), false);
+                Circles[13] = oSketch21.SketchCircles.AddByCenterRadius(point[13], 0.8);
+                point[15] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 0.8 * 22.91288, -0.8 * 14), false);
+                Circles[15] = oSketch21.SketchCircles.AddByCenterRadius(point[15], 0.8);
+                point[17] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 0.8 * 15, -0.8 * 28), false);
+                Circles[17] = oSketch21.SketchCircles.AddByCenterRadius(point[17], 0.8);
+                point[19] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * 0, -0.8 * 35), false);
+                Circles[19] = oSketch21.SketchCircles.AddByCenterRadius(point[19], 0.8);
+                point[21] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * 15, -0.8 * 28), false);
+                Circles[21] = oSketch21.SketchCircles.AddByCenterRadius(point[21], 0.8);
+                point[23] = oSketch21.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * 22.91288, -0.8 * 14), false);
+                Circles[23] = oSketch21.SketchCircles.AddByCenterRadius(point[23], 0.8);
+
+                Profile oProfile21 = (Profile)oSketch21.Profiles.AddForSolid();
+                ExtrudeFeature oExtrudeDef21 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (oProfile21, 3 * S2, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile21);
+          
+            }
+            ///////////////////// круговой вырез под крышкой
+            PlanarSketch oSketch6 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            Transaction oTrans3 = ThisApplication.TransactionManager.StartTransaction(ThisApplication.ActiveDocument, "Create Sample2");
+            point[50] = oSketch6.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 0), false);
+            point[51] = oSketch6.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 100), false);
+            line[0] = oSketch6.SketchLines.AddByTwoPoints(point[50], point[51]);      
+            point[3] = oSketch6.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv, H6 + H7 - 2 * S2), false);
+            point[7] = oSketch6.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2, H6), false);
+            point[102] = oSketch6.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 6, H6 + H7 - S2 * 2.5), false);
+            point[103] = oSketch6.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2.8, H6 + H7 / 2 - S2), false);
+            point[4] = oSketch6.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv, H6), false);
+
+    
+            SketchSpline[] Spline1 = new SketchSpline[20];
+            Эллипс[3].Add(point[3]);
+            Эллипс[3].Add(point[102]);
+            Эллипс[3].Add(point[103]);
+            Эллипс[3].Add(point[7]);
+            Spline1[1] = oSketch6.SketchSplines.Add(Эллипс[3]);
+            line[2] = oSketch6.SketchLines.AddByTwoPoints(point[7], point[4]);
+            line[3] = oSketch6.SketchLines.AddByTwoPoints(point[4], point[3]);     
+            Profile oProfile6 = (Profile)oSketch6.Profiles.AddForSolid();   
+            RevolveFeature Вращение1 = oCompDef.Features.RevolveFeatures.AddFull(oProfile6, line[0], PartFeatureOperationEnum.kCutOperation);
+        
+            oTrans3.End();
+
+            //крышка над ц
+            PlanarSketch oSketch15 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            point[1] = oSketch15.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 0), false);
+            point[2] = oSketch15.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 100), false);
+            point[3] = oSketch15.SketchPoints.Add(oTransGeom.CreatePoint2d(0, H6 + H7 + S3), false);
+            point[4] = oSketch15.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2 + 4 * S3+2, H6 + H7 + S3), false);
+            point[5] = oSketch15.SketchPoints.Add(oTransGeom.CreatePoint2d(0, H6 + H7 + 2 * S3), false);
+            point[6] = oSketch15.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2 + 4 * S3+2, H6 + H7 + 2 * S3), false);
+            line[0] = oSketch15.SketchLines.AddByTwoPoints(point[1], point[2]);
+            line[1] = oSketch15.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[2] = oSketch15.SketchLines.AddByTwoPoints(point[4], point[6]);
+            line[3] = oSketch15.SketchLines.AddByTwoPoints(point[6], point[5]);
+            line[4] = oSketch15.SketchLines.AddByTwoPoints(point[5], point[3]);
+            Profile oProfile15 = (Profile)oSketch15.Profiles.AddForSolid();
+            RevolveFeature Вращение15 = oCompDef.Features.RevolveFeatures.AddFull(oProfile15, line[0], PartFeatureOperationEnum.kJoinOperation);
+
+            //отверстия под ц
+            WorkPlane oWorkPlane19 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 2 * S3, false);
+            oWorkPlane19.Visible = false;
+            PlanarSketch oSketch19 = oCompDef.Sketches.Add(oWorkPlane19, false);
+            point[23] = oSketch19.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + S2 + 4 * S3, 0), false);
+            Circles[1] = oSketch19.SketchCircles.AddByCenterRadius(point[23], 0.8);
+            Profile oProfile19 = (Profile)oSketch19.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef19 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile19, 2 * S3, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile19);
+ 
+           //массив отверстий под болты для крышки Ц 
+            ObjectCollection bolti3 = ThisApplication.TransientObjects.CreateObjectCollection();
+            bolti3.Add(oExtrudeDef19);
+            WorkAxis Ось3 = oCompDef.WorkAxes[2];
+            CircularPatternFeature Массив3 = oCompDef.Features.CircularPatternFeatures.Add(bolti3, Ось3, false, Kolb2, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+           
+            ///Трубы 
+            ///1 центральная
+            
+            Transaction oTrans7 = ThisApplication.TransactionManager.StartTransaction(ThisApplication.ActiveDocument, "Create Sample2");
+            PlanarSketch oSketch7 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            point[1] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, 0), false);
+            point[2] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, 100), false);
+            line[0]  = oSketch7.SketchLines.AddByTwoPoints(point[1], point[2]);
+            point[3] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 0.875 * Otv, H6 + H7 + 0.5 * S3), false);
+            point[4] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + Otv, H6 + H7 + 0.5 * S3), false);
+            point[5] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2/2+Otv, H6+H9-H2), false);
+            point[6] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, H6 + H9 - H2 - Otv), false);
+            point[7] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2 + 0.875 * Otv, H6 + H9 - H2), false);
+            point[8] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, H6 + H9 - H2 - 0.875 * Otv), false);
+            point[9] = oSketch7.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 / 2, H6 + H9 - H2), false);
+            
+            SketchArc[] arcs = new SketchArc[14];
+            arcs[0] = oSketch7.SketchArcs.AddByCenterStartEndPoint(point[9],point[8],point[7]);
+            arcs[1] = oSketch7.SketchArcs.AddByCenterStartEndPoint(point[9], point[6], point[5]);
+           
+            line[1] = oSketch7.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[2] = oSketch7.SketchLines.AddByTwoPoints(point[4], point[5]);
+            line[3] = oSketch7.SketchLines.AddByTwoPoints(point[3], point[7]);
+            line[4] = oSketch7.SketchLines.AddByTwoPoints(point[6], point[8]);
+
+            Profile oProfile7 = (Profile)oSketch7.Profiles.AddForSolid();
+            RevolveFeature Вращение2 = oCompDef.Features.RevolveFeatures.AddFull(oProfile7, line[0], PartFeatureOperationEnum.kJoinOperation);
+         
+            //2 верхняя
+            WorkPlane oWorkPlane4 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], D2 / 2 * 0.9848, false);
+            oWorkPlane4.Visible = false;
+            PlanarSketch oSketch8 = oCompDef.Sketches.Add(oWorkPlane4, false);
+            point[1] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736/2, 0), false);
+            point[2] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, 100), false);
+            line[0] = oSketch8.SketchLines.AddByTwoPoints(point[1], point[2]);
+            point[3] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + 0.875 * Otv, H6 + H7 + 0.5 * S3), false);
+            point[4] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + Otv, H6 + H7 + 0.5 * S3), false);
+            point[5] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + Otv, H6 + H9 - H2), false);
+            point[6] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, H6 + H9 - H2 - Otv), false);
+            point[7] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + 0.875 * Otv, H6 + H9 - H2), false);
+            point[8] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, H6 + H9 - H2 - 0.875 * Otv), false);
+            point[9] = oSketch8.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, H6 + H9 - H2), false);
+          
+            arcs[0] = oSketch8.SketchArcs.AddByCenterStartEndPoint(point[9], point[8], point[7]);
+            arcs[1] = oSketch8.SketchArcs.AddByCenterStartEndPoint(point[9], point[6], point[5]);
+
+            line[1] = oSketch8.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[2] = oSketch8.SketchLines.AddByTwoPoints(point[4], point[5]);
+            line[3] = oSketch8.SketchLines.AddByTwoPoints(point[3], point[7]);
+            line[4] = oSketch8.SketchLines.AddByTwoPoints(point[6], point[8]);
+
+            Profile oProfile8 = (Profile)oSketch8.Profiles.AddForSolid();
+            RevolveFeature Вращение3 = oCompDef.Features.RevolveFeatures.AddFull(oProfile8, line[0], PartFeatureOperationEnum.kJoinOperation);
+            //////
+            //3 нижняя
+            WorkPlane oWorkPlane5 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], -D2 / 2 * 0.9848, false);
+            oWorkPlane5.Visible = false;
+            PlanarSketch oSketch9 = oCompDef.Sketches.Add(oWorkPlane5, false);
+            point[1] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, 0), false);
+            point[2] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, 100), false);
+            line[0] = oSketch9.SketchLines.AddByTwoPoints(point[1], point[2]);
+            point[3] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + 0.875 * Otv, H6 + H7 + 0.5 * S3), false);
+            point[4] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + Otv, H6 + H7 + 0.5 * S3), false);
+            point[5] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + Otv, H6 + H9 - H2), false);
+            point[6] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, H6 + H9 - H2 - Otv), false);
+            point[7] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2 + 0.875 * Otv, H6 + H9 - H2), false);
+            point[8] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, H6 + H9 - H2 - 0.875 * Otv), false);
+            point[9] = oSketch9.SketchPoints.Add(oTransGeom.CreatePoint2d(D2 * 0.1736 / 2, H6 + H9 - H2), false);
+
+            arcs[0] = oSketch9.SketchArcs.AddByCenterStartEndPoint(point[9], point[8], point[7]);
+            arcs[1] = oSketch9.SketchArcs.AddByCenterStartEndPoint(point[9], point[6], point[5]);
+
+            line[1] = oSketch9.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[2] = oSketch9.SketchLines.AddByTwoPoints(point[4], point[5]);
+            line[3] = oSketch9.SketchLines.AddByTwoPoints(point[3], point[7]);
+            line[4] = oSketch9.SketchLines.AddByTwoPoints(point[6], point[8]);
+
+            Profile oProfile9 = (Profile)oSketch9.Profiles.AddForSolid();
+            RevolveFeature Вращение4 = oCompDef.Features.RevolveFeatures.AddFull(oProfile9, line[0], PartFeatureOperationEnum.kJoinOperation);
+            //отверстия под болты 5*
+            WorkPlane oWorkPlane8 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6, false);
+            oWorkPlane8.Visible = false;
+            PlanarSketch oSketch17 = oCompDef.Sketches.Add(oWorkPlane8, false);
+            point[20] = oSketch17.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 + S2 * 4 - 3, 0), false);
+            Circles[1] = oSketch17.SketchCircles.AddByCenterRadius(point[20], 1);
+            Profile oProfile17 = (Profile)oSketch17.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef17 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile17, S2, PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile17);
+            
+            ObjectCollection bolti2 = ThisApplication.TransientObjects.CreateObjectCollection();
+            bolti2.Add(oExtrudeDef17);
+            WorkAxis Ось2 = oCompDef.WorkAxes[2];
+            CircularPatternFeature Массив2 = oCompDef.Features.CircularPatternFeatures.Add(bolti2, Ось2, false, Kolb3, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+ 
+            oTrans7.End();
+
+            saveFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            saveFileDialog1.Title = Text;
+            saveFileDialog1.FileName = oPartDoc.DisplayName;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(saveFileDialog1.FileName))
+                {
+                    oPartDoc.SaveAs(saveFileDialog1.FileName, false);
+                    oFileName["Крышка"] = saveFileDialog1.FileName;
+                }
+            }
+
+            D = D * 10;
+            D1 = D1 * 10;
+            D2 = D2 * 10;
+            D3 = D3 * 10;
+            H = H * 10;
+            H1 = H1 * 10;
+            H2 = H2 * 10;
+            H3 = H3 * 10;
+            H4 = H4 * 10;
+            H5 = H5 * 10;
+            H6 = H6 * 10;
+            H7 = H7 * 10;
+            H8 = H8 * 10;
+            H9 = H9 * 10;
+            H10 = H10 * 10;
+            L = L * 10;
+            L1 = L1 * 10;
+            L2 = L2 * 10;
+            L3 = L3 * 10;
+            S = S * 10;
+            S1 = S1 * 10;
+            S2 = S2 * 10;
+            S3 = S3 * 10;
+            d = d * 10;
+            Otv = Otv * 20;
+            X = X * 10;
+            Y = Y * 10;
+        }
+        private void button5_Click(object sender, EventArgs e) //опоры
+        {
+            try
+            { ThisApplication = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application"); }
+            catch
+            { System.Windows.Forms.MessageBox.Show("Запустите Инвентор!", "Сообщение"); return; }
+
+            D = D / 10; D1 = D1 / 10; D2 = D2 / 10; D3 = D3 / 10; H = H / 10; H1 = H1 / 10; H2 = H2 / 10; H3 = H3 / 10; H4 = H4 / 10; H5 = H5 / 10; H6 = H6 / 10;
+            H7 = H7 / 10; H8 = H8 / 10; H9 = H9 / 10; H10 = H10 / 10; L = L / 10; L1 = L1 / 10; L2 = L2 / 10; L3 = L3 / 10; S = S / 10; S1 = S1 / 10; S2 = S2 / 10;
+            S3 = S3 / 10; d = d / 10; Otv = Otv / 20;
+
+            int hsir = 4, tol = 1, dlin2 = 15,dlin3=1;
+
+            Inventor.Application oApp;
+            oApp = (Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application");
+            PartDocument oPartDoc = default(PartDocument);
+            oPartDoc = (PartDocument)oApp.Documents.Add(DocumentTypeEnum.kPartDocumentObject, oApp.FileManager.GetTemplateFile(DocumentTypeEnum.kPartDocumentObject),true);
+            PartComponentDefinition oCompDef = default(PartComponentDefinition);
+            oCompDef = oPartDoc.ComponentDefinition;
+            WorkPlane oWorkPlane1 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 - H4-3, false);
+            oWorkPlane1.Visible = false;
+            WorkPlane oWorkPlane2 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], hsir/2, false);
+            oWorkPlane2.Visible = false;
+            WorkPlane oWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], -hsir / 2, false);
+            oWorkPlane3.Visible = false;
+
+
+            PlanarSketch oSketch = oCompDef.Sketches.Add(oWorkPlane1, false);
+            PlanarSketch oSketch1 = oCompDef.Sketches.Add(oWorkPlane2, false);
+            PlanarSketch oSketch2 = oCompDef.Sketches.Add(oWorkPlane3, false);
+            PlanarSketch oSketch3 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            PlanarSketch oSketch4 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+            TransientGeometry oTransGeom = oApp.TransientGeometry;
+            Transaction oTrans = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+            SketchPoint[] point = new SketchPoint[200];
+
+            point[1] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-D1 / 2+10-S3, -hsir / 2), false);
+            point[2] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-D1 / 2 + 10 - S3, hsir / 2), false);
+            point[3] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-D1 / 2 - 1.5*dlin - S3, hsir / 2), false);
+            point[4] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-D1 / 2 - 1.5*dlin - S3, -hsir / 2), false);
+            point[5] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 , H6 - H4 - 5 + dlin2), false);
+            point[7] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + 1.5 * dlin + S3, H6 - H4 - 3 + dlin3), false);
+            point[8] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + 1.5 * dlin + S3, H6 - H4 - 3 - tol), false);
+            point[9] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 , H6 - H4 - 3 - tol), false);
+            point[15] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 , H6 - H4 - 5 + dlin2), false);
+            point[17] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + 1.5 * dlin + S3, H6 - H4 - 3 + dlin3), false);
+            point[18] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + 1.5 * dlin + S3, H6 - H4 - 3 - tol), false);
+            point[19] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + S3, H6 - H4 - 3 - tol), false);
+            SketchLine[] line = new SketchLine[50];
+            line[1] = oSketch.SketchLines.AddByTwoPoints(point[2], point[1]);
+            line[2] = oSketch.SketchLines.AddByTwoPoints(point[1], point[4]);
+            line[3] = oSketch.SketchLines.AddByTwoPoints(point[4], point[3]);
+            line[4] = oSketch.SketchLines.AddByTwoPoints(point[3], point[2]);
+            line[5] = oSketch1.SketchLines.AddByTwoPoints(point[5], point[7]);
+            line[6] = oSketch1.SketchLines.AddByTwoPoints(point[7], point[8]);
+            line[7] = oSketch1.SketchLines.AddByTwoPoints(point[8], point[9]);
+            line[10] = oSketch1.SketchLines.AddByTwoPoints(point[9], point[5]);
+            line[11] = oSketch2.SketchLines.AddByTwoPoints(point[19], point[15]);
+            line[12] = oSketch2.SketchLines.AddByTwoPoints(point[15], point[17]);
+            line[13] = oSketch2.SketchLines.AddByTwoPoints(point[17], point[18]);
+            line[14] = oSketch2.SketchLines.AddByTwoPoints(point[18], point[19]);
+            Profile oProfile1 = (Profile)oSketch.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+          (oProfile1, tol, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile1);
+            Profile oProfile2 = (Profile)oSketch1.Profiles.AddForSolid();
+
+            //вырезающий профиль
+            point[21] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 0), false);
+            point[22] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 100), false);
+            line[20] = oSketch3.SketchLines.AddByTwoPoints(point[21], point[22]);
+            point[23] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + S3, 100), false);
+            point[24] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + S3, 0), false);
+            point[25] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 0), false);
+            point[26] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(0, 100), false);
+            line[21] = oSketch3.SketchLines.AddByTwoPoints(point[23], point[24]);
+            line[22] = oSketch3.SketchLines.AddByTwoPoints(point[24], point[25]);
+            line[23] = oSketch3.SketchLines.AddByTwoPoints(point[25], point[26]);
+            line[24] = oSketch3.SketchLines.AddByTwoPoints(point[26], point[23]);
+
+            ExtrudeFeature oExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile2, tol, PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile2);
+            Profile oProfile3 = (Profile)oSketch2.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef2 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile3, tol, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile3);
+            Profile oProfile4 = (Profile)oSketch3.Profiles.AddForSolid();
+            RevolveFeature Вращение4 = oCompDef.Features.RevolveFeatures.AddFull(oProfile4, line[20], PartFeatureOperationEnum.kCutOperation);
+           
+            //отверстие
+            point[30] = oSketch4.SketchPoints.Add(oTransGeom.CreatePoint2d(-D1 / 2 - 1.3 * dlin, 0), false);
+            SketchCircle[] Circles = new SketchCircle[10];
+            Circles[1] = oSketch4.SketchCircles.AddByCenterRadius(point[30], 1.2);
+            Profile oProfile5 = (Profile)oSketch4.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+            (oProfile5, 200, PartFeatureExtentDirectionEnum.kPositiveExtentDirection, PartFeatureOperationEnum.kCutOperation, oProfile5);
+
+
+            oTrans.End();
+            Profile oProfile = default(Profile);
+            oProfile = oSketch.Profiles.AddForSolid();
+            saveFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            saveFileDialog1.Title = Text;
+            saveFileDialog1.FileName = oPartDoc.DisplayName;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(saveFileDialog1.FileName))
+                {
+                    oPartDoc.SaveAs(saveFileDialog1.FileName, false);
+                    oFileName["Опоры"] = saveFileDialog1.FileName;
+                }
+            }
+
+            D = D * 10;
+            D1 = D1 * 10;
+            D2 = D2 * 10;
+            D3 = D3 * 10;
+            H = H * 10;
+            H1 = H1 * 10;
+            H2 = H2 * 10;
+            H3 = H3 * 10;
+            H4 = H4 * 10;
+            H5 = H5 * 10;
+            H6 = H6 * 10;
+            H7 = H7 * 10;
+            H8 = H8 * 10;
+            H9 = H9 * 10;
+            H10 = H10 * 10;
+            L = L * 10;
+            L1 = L1 * 10;
+            L2 = L2 * 10;
+            L3 = L3 * 10;
+            S = S * 10;
+            S1 = S1 * 10;
+            S2 = S2 * 10;
+            S3 = S3 * 10;
+            d = d * 10;
+            Otv = Otv * 20;
+        }
+        private void button6_Click(object sender, EventArgs e) //фланец
+        {
+            try
+            { ThisApplication = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application"); }
+            catch
+            { System.Windows.Forms.MessageBox.Show("Запустите Инвентор!", "Сообщение"); return; }
+
+            D = D / 10; D1 = D1 / 10; D2 = D2 / 10; D3 = D3 / 10; H = H / 10; H1 = H1 / 10; H2 = H2 / 10; H3 = H3 / 10; H4 = H4 / 10; H5 = H5 / 10; H6 = H6 / 10;
+            H7 = H7 / 10; H8 = H8 / 10; H9 = H9 / 10; H10 = H10 / 10; L = L / 10; L1 = L1 / 10; L2 = L2 / 10; L3 = L3 / 10; S = S / 10; S1 = S1 / 10; S2 = S2 / 10;
+            S3 = S3 / 10; d = d / 10; Otv = Otv / 20; a1 = a1 / 10; a2 = a2 / 10; a3 = a3 / 10; b1 = b1 / 10; b2 = b2 / 10; b3 = b3 / 10; b4 = b4 / 10;
+            Otve = Otve / 40;
+
+            Inventor.Application oApp;
+            oApp = (Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application");
+            PartDocument oPartDoc = default(PartDocument);
+            oPartDoc = (PartDocument)oApp.Documents.Add(DocumentTypeEnum.kPartDocumentObject, oApp.FileManager.GetTemplateFile(DocumentTypeEnum.kPartDocumentObject), true);
+            PartComponentDefinition oCompDef = default(PartComponentDefinition);
+            oCompDef = oPartDoc.ComponentDefinition;
+
+            PlanarSketch oSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            TransientGeometry oTransGeom = oApp.TransientGeometry;
+            Transaction oTrans = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+            SketchPoint[] point = new SketchPoint[200];
+            SketchLine[] line = new SketchLine[200];
+
+            
+            point[1] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0, H6 - H1), false);
+            point[2] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(10, H6 - H1), false);
+            point[3] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 - 0.1, H6 - H1 + Otve+a1), false);
+            point[4] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 - 0.1, H6 - H1 + Otve), false);
+            point[5] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1, H6 - H1 + Otve), false);
+            point[6] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1, H6 - H1 + Otve + a2), false);
+            point[12] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1-b4, H6 - H1 + Otve+a2), false);
+            point[7] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1-b4, H6 - H1 + Otve+a2-a3), false);
+            point[8] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1-b4-b3, H6 - H1 + Otve+a2-a3), false);
+            point[9] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1-b4-b3, H6 - H1 + Otve+a2), false);
+            point[10] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1-b4-b3-b2, H6 - H1 + Otve+a2), false);
+            point[11] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2 + b1-b4-b3-b2, H6 - H1 + Otve+a1), false);
+          
+            line[1] = oSketch.SketchLines.AddByTwoPoints(point[1], point[2]);
+            line[2] = oSketch.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[3] = oSketch.SketchLines.AddByTwoPoints(point[4], point[5]);
+            line[4] = oSketch.SketchLines.AddByTwoPoints(point[5], point[6]);
+            line[5] = oSketch.SketchLines.AddByTwoPoints(point[6], point[12]);
+            line[6] = oSketch.SketchLines.AddByTwoPoints(point[12], point[7]);
+            line[7] = oSketch.SketchLines.AddByTwoPoints(point[7], point[8]);
+            line[8] = oSketch.SketchLines.AddByTwoPoints(point[8], point[9]);
+            line[9] = oSketch.SketchLines.AddByTwoPoints(point[9], point[10]);
+            line[10] = oSketch.SketchLines.AddByTwoPoints(point[10], point[11]);
+            line[11] = oSketch.SketchLines.AddByTwoPoints(point[11], point[3]);
+            
+            //симетричный фланец
+
+            point[23] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 - 0.1), H6 - H1 + Otve + a1), false);
+            point[24] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 - 0.1), H6 - H1 + Otve), false);
+            point[25] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1), H6 - H1 + Otve), false);
+            point[26] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1), H6 - H1 + Otve + a2), false);
+            point[32] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1-b4), H6 - H1 + Otve+a2), false);
+            point[27] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1-b4), H6 - H1 + Otve+a2-a3), false);
+            point[28] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1-b4-b3), H6 - H1 + Otve+a2-a3), false);
+            point[29] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1-b4-b3), H6 - H1 + Otve+a2), false);
+            point[30] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1-b4-b3-b2), H6 - H1 + Otve+a2), false);
+            point[31] = oSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-(D1 / 2 + b1-b4-b3-b2), H6 - H1 + Otve+a1), false);
+           
+            line[22] = oSketch.SketchLines.AddByTwoPoints(point[23], point[24]);
+            line[23] = oSketch.SketchLines.AddByTwoPoints(point[24], point[25]);
+            line[24] = oSketch.SketchLines.AddByTwoPoints(point[25], point[26]);
+            line[25] = oSketch.SketchLines.AddByTwoPoints(point[26], point[32]);
+            line[26] = oSketch.SketchLines.AddByTwoPoints(point[32], point[27]);
+            line[27] = oSketch.SketchLines.AddByTwoPoints(point[27], point[28]);
+            line[28] = oSketch.SketchLines.AddByTwoPoints(point[28], point[29]);
+            line[29] = oSketch.SketchLines.AddByTwoPoints(point[29], point[30]);
+            line[30] = oSketch.SketchLines.AddByTwoPoints(point[30], point[31]);
+            line[31] = oSketch.SketchLines.AddByTwoPoints(point[31], point[23]);
+            Profile oProfile1 = (Profile)oSketch.Profiles.AddForSolid();
+            RevolveFeature Вращение1 = oCompDef.Features.RevolveFeatures.AddFull(oProfile1, line[1], PartFeatureOperationEnum.kJoinOperation);
+
+            //Фланец снизу
+
+            PlanarSketch oSketch1 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            point[41] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2,100), false);
+            point[42] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2, 0), false);
+            line[41] = oSketch1.SketchLines.AddByTwoPoints(point[41], point[42]);
+
+            point[3] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 2, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2+4), false);
+            point[4] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 1, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 + 4), false);
+            point[5] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 1, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 +S3-9.6 ), false);
+            point[6] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 4, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 + S3 - 9.6), false);
+            point[12] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 4, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 + 2 * S3 - 9.6), false);
+            point[7] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 3, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 + 2 * S3 - 9.6), false);
+            point[8] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 3, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 + 3 * S3 - 9.6), false);
+            point[9] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 4, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 +3 * S3 - 9.6), false);
+            point[10] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 4, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 + 4 * S3 - 9.6), false);
+            point[11] = oSketch1.SketchPoints.Add(oTransGeom.CreatePoint2d(-L2 + 2, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2 + 4 * S3 - 9.6), false);
+            line[51] = oSketch1.SketchLines.AddByTwoPoints(point[3], point[4]);
+            line[52] = oSketch1.SketchLines.AddByTwoPoints(point[4], point[5]);
+            line[53] = oSketch1.SketchLines.AddByTwoPoints(point[5], point[6]);
+            line[54] = oSketch1.SketchLines.AddByTwoPoints(point[6], point[12]);
+            line[55] = oSketch1.SketchLines.AddByTwoPoints(point[12], point[7]);
+            line[56] = oSketch1.SketchLines.AddByTwoPoints(point[7], point[8]);
+            line[57] = oSketch1.SketchLines.AddByTwoPoints(point[8], point[9]);
+            line[58] = oSketch1.SketchLines.AddByTwoPoints(point[9], point[10]);
+            line[59] = oSketch1.SketchLines.AddByTwoPoints(point[10], point[11]);
+            line[60] = oSketch1.SketchLines.AddByTwoPoints(point[11], point[3]);
+            Profile oProfile2 = (Profile)oSketch1.Profiles.AddForSolid();
+            RevolveFeature Вращение2 = oCompDef.Features.RevolveFeatures.AddFull(oProfile2, line[41], PartFeatureOperationEnum.kJoinOperation);
+            //ушко
+            PlanarSketch oSketch3 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            SketchCircle[] Circles = new SketchCircle[30];
+            point[70] = oSketch3.SketchPoints.Add(oTransGeom.CreatePoint2d(-D + S2 + D1 / 2, H6 / 4 - H6 / 40 - S2 - (D1 - D) / 2 + 0.5 * S3 - 1), false);
+            Circles[1] = oSketch3.SketchCircles.AddByCenterRadius(point[70], 3);
+            Profile oProfile4 = (Profile)oSketch3.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (oProfile4, 2, PartFeatureExtentDirectionEnum.kSymmetricExtentDirection, PartFeatureOperationEnum.kJoinOperation, oProfile4);
+           
+             //круговой вырез для нижнего фланца
+            PlanarSketch oSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+
+
+            point[2] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + 2 * S2, H6 - H5 - (D1 - D) / 2), false);
+            point[6] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D1 / 2, H6 / 4), false);
+            point[101] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 4, H6 - H5 + H6 / 25 - S2 - (D1 - D) / 2), false);
+            point[102] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 - S2 - (D1 - D) / 2, H6 / 4 - H6 / 40 - S2 - (D1 - D) / 2 + 1.5 * S3), false);
+            point[55] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(Otv + 2 * S2, H6 / 4), false);
+            line[60] = oSketch2.SketchLines.AddByTwoPoints(point[2], point[55]);
+            line[61] = oSketch2.SketchLines.AddByTwoPoints(point[55], point[6]);
+            line[59] = oSketch2.SketchLines.AddByTwoPoints(oTransGeom.CreatePoint2d(0, 0), oTransGeom.CreatePoint2d(0, 100));
+
+            ObjectCollection[] Эллипс = new ObjectCollection[20];
+            Эллипс[1] = ThisApplication.TransientObjects.CreateObjectCollection(null);
+            SketchSpline[] Spline = new SketchSpline[20];
+            Эллипс[1].Add(point[2]);
+            Эллипс[1].Add(point[101]);
+            Эллипс[1].Add(point[102]);
+            Эллипс[1].Add(point[6]);
+            Spline[1] = oSketch2.SketchSplines.Add(Эллипс[1]);
+            point[71] = oSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(D / 2 - S2 - (D1 - D) / 2, H6 / 4 - H6 / 40 - S2 - (D1 - D) / 2 + 0.5 * S3 - 1), false);
+            Circles[1] = oSketch2.SketchCircles.AddByCenterRadius(point[71], 1);
+            Profile oProfile3 = (Profile)oSketch2.Profiles.AddForSolid();
+            RevolveFeature Вращение3 = oCompDef.Features.RevolveFeatures.AddFull(oProfile3, line[59], PartFeatureOperationEnum.kCutOperation);
+         
+
+            Profile oProfile = default(Profile);
+            oProfile = oSketch.Profiles.AddForSolid();
+            saveFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            saveFileDialog1.Title = Text;
+            saveFileDialog1.FileName = oPartDoc.DisplayName;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(saveFileDialog1.FileName))
+                {
+                    oPartDoc.SaveAs(saveFileDialog1.FileName, false);
+                    oFileName["Фланцы"] = saveFileDialog1.FileName;
+                }
+            }
+
+            D = D * 10;
+            D1 = D1 * 10;
+            D2 = D2 * 10;
+            D3 = D3 * 10;
+            H = H * 10;
+            H1 = H1 * 10;
+            H2 = H2 * 10;
+            H3 = H3 * 10;
+            H4 = H4 * 10;
+            H5 = H5 * 10;
+            H6 = H6 * 10;
+            H7 = H7 * 10;
+            H8 = H8 * 10;
+            H9 = H9 * 10;
+            H10 = H10 * 10;
+            L = L * 10;
+            L1 = L1 * 10;
+            L2 = L2 * 10;
+            L3 = L3 * 10;
+            S = S * 10;
+            S1 = S1 * 10;
+            S2 = S2 * 10;
+            S3 = S3 * 10;
+            d = d * 10;
+            Otv = Otv * 20;
+            a1 = a1 * 10;
+            a2 = a2 * 10;
+            a3 = a3 * 10;
+            b1 = b1 * 10;
+            b2 = b2 * 10;
+            b3 = b3 * 10;
+            b4 = b4 * 10;
+            Otve = Otve * 40;
+        }
+        private void button7_Click(object sender, EventArgs e) //болты
+        {
+            try
+            { ThisApplication = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application"); }
+            catch
+            { System.Windows.Forms.MessageBox.Show("Запустите Инвентор!", "Сообщение"); return; }
+            D = D / 10; D1 = D1 / 10; D2 = D2 / 10; D3 = D3 / 10; H = H / 10; H1 = H1 / 10; H2 = H2 / 10; H3 = H3 / 10; H4 = H4 / 10; H5 = H5 / 10; H6 = H6 / 10; H7 = H7 / 10; H8 = H8 / 10;
+            H9 = H9 / 10; H10 = H10 / 10; L = L / 10; L1 = L1 / 10; L2 = L2 / 10; L3 = L3 / 10; S = S / 10; S1 = S1 / 10; S2 = S2 / 10; S3 = S3 / 10; d = d / 10; Otv = Otv / 20; X = X / 10; Y = Y / 10;
+            double Db = 1.6, Kb = 1, Sb = 2.4, Eb = 2.6;
+            Inventor.Application oApp;
+            oApp = (Inventor.Application)System.Runtime.InteropServices.Marshal.
+            GetActiveObject("Inventor.Application");
+            PartDocument oPartDoc = default(PartDocument);
+            oPartDoc = (PartDocument)oApp.Documents.Add(DocumentTypeEnum.kPartDocumentObject, oApp.FileManager.GetTemplateFile(DocumentTypeEnum.kPartDocumentObject), true);
+            PartComponentDefinition oCompDef = default(PartComponentDefinition);
+            oCompDef = oPartDoc.ComponentDefinition;
+
+            PlanarSketch oSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            TransientGeometry oTransGeom = oApp.TransientGeometry;
+            Transaction oTrans = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+            SketchPoint[] Точка = new SketchPoint[200];
+            SketchLine[] Линия = new SketchLine[200];
+            ////////////////////////////////////////////////////////
+            #region отверстие Д
+            /////////////////////////////////////////////////////отверстие Д
+            WorkPlane boWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], S3, false);
+            boWorkPlane.Visible = false;
+            PlanarSketch boSketch = oCompDef.Sketches.Add(boWorkPlane, false);
+            //PlanarSketch boSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+           
+            SketchCircle okr1 = default(SketchCircle);
+            okr1 = boSketch.SketchCircles.AddByCenterRadius(oTransGeom.CreatePoint2d(+2 * Otv + 2 * S2 + S3 - 2, 0), Db / 2);
+            Profile oP3 = boSketch.Profiles.AddForSolid();
+            ExtrudeFeature oExtrudeDef6 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (oP3, 4, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oP3);
+
+            WorkPlane MyWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], S3);
+            MyWorkPlane.Visible = false;
+            boSketch = oCompDef.Sketches.Add(MyWorkPlane);
+
+            SketchPoint[] point1 = new SketchPoint[6];
+            point1[0] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, -Sb / 4), false);
+            point1[1] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, Sb / 4), false);
+            point1[2] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, -Sb / 4), false);
+            point1[3] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, Sb / 4), false);
+            point1[4] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + 2 * Otv + 2 * S2 + S3 - 2, Eb / 2), false);
+            point1[5] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + 2 * Otv + 2 * S2 + S3 - 2, -Eb / 2), false);
+
+            SketchLine[] line1 = new SketchLine[6];
+            line1[0] = boSketch.SketchLines.AddByTwoPoints(point1[0], point1[1]);
+            line1[1] = boSketch.SketchLines.AddByTwoPoints(point1[2], point1[3]);
+            line1[2] = boSketch.SketchLines.AddByTwoPoints(point1[1], point1[4]);
+            line1[3] = boSketch.SketchLines.AddByTwoPoints(point1[3], point1[4]);
+            line1[4] = boSketch.SketchLines.AddByTwoPoints(point1[0], point1[5]);
+            line1[5] = boSketch.SketchLines.AddByTwoPoints(point1[2], point1[5]);
+
+            Profile oProfileF = (Profile)boSketch.Profiles.AddForSolid();
+
+            ExtrudeFeature oExtrudeDef8 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (oProfileF, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, oProfileF);
+
+            WorkPlane MyWorkPlane1 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], "0");
+            MyWorkPlane1.Visible = false;
+            boSketch = oCompDef.Sketches.Add(MyWorkPlane1);
+            // Создание файла эскиза.
+
+            TransientGeometry oTransGeom1 = default(TransientGeometry);
+            oTransGeom1 = oApp.TransientGeometry;
+            Transaction oTransF1 = default(Transaction);
+            oTransF1 = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+
+            SketchPoint[] point2 = new SketchPoint[5];
+            point2[0] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (2 * Otv + 2 * S2 + S3 - 2), 1 + S3), false);
+            point2[1] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (2 * Otv + 2 * S2 + S3 - 2), 1 + S3), false);
+            point2[2] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (2 * Otv + 2 * S2 + S3 - 2), 0.5 + S3), false);
+            point2[3] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (2 * Otv + 2 * S2 + S3 - 2), 0 + S3), false);
+            point2[4] = boSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (2 * Otv + 2 * S2 + S3 - 2), 5 + S3), false);
+
+            SketchLine[] line2 = new SketchLine[4];
+            line2[0] = boSketch.SketchLines.AddByTwoPoints(point2[0], point2[1]);
+            line2[1] = boSketch.SketchLines.AddByTwoPoints(point2[0], point2[2]);
+            line2[2] = boSketch.SketchLines.AddByTwoPoints(point2[1], point2[2]);
+            line2[3] = boSketch.SketchLines.AddByTwoPoints(point2[3], point2[4]);
+
+            oTransF1.End();
+            Profile oProfileF1 = default(Profile);
+            oProfileF1 = boSketch.Profiles.AddForSolid();
+            RevolveFeature revolvefeature = oCompDef.Features.RevolveFeatures.AddFull(oProfileF1, line2[3], PartFeatureOperationEnum.kCutOperation);
+            //////////////////////////////////////////////////////////////
+            //гайки
+            //////////////////////////////////////////////////////////////
+            WorkPlane MyWorkPlane2 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], -1.8 - S3);
+            MyWorkPlane2.Visible = false;
+            PlanarSketch boSketch2 = oCompDef.Sketches.Add(MyWorkPlane2);
+            TransientGeometry oTransGeom2 = oApp.TransientGeometry;
+
+            SketchPoint[] point3 = new SketchPoint[7];
+            point3[0] = boSketch2.SketchPoints.Add(oTransGeom2.CreatePoint2d(Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, -Sb / 4), false);
+            point3[1] = boSketch2.SketchPoints.Add(oTransGeom2.CreatePoint2d(Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, Sb / 4), false);
+            point3[2] = boSketch2.SketchPoints.Add(oTransGeom2.CreatePoint2d(-Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, -Sb / 4), false);
+            point3[3] = boSketch2.SketchPoints.Add(oTransGeom2.CreatePoint2d(-Sb / 2 + 2 * Otv + 2 * S2 + S3 - 2, Sb / 4), false);
+            point3[4] = boSketch2.SketchPoints.Add(oTransGeom2.CreatePoint2d(0 + 2 * Otv + 2 * S2 + S3 - 2, Eb / 2), false);
+            point3[5] = boSketch2.SketchPoints.Add(oTransGeom2.CreatePoint2d(0 + 2 * Otv + 2 * S2 + S3 - 2, -Eb / 2), false);
+
+            SketchLine[] line3 = new SketchLine[6];
+            line3[0] = boSketch2.SketchLines.AddByTwoPoints(point3[0], point3[1]);
+            line3[1] = boSketch2.SketchLines.AddByTwoPoints(point3[2], point3[3]);
+            line3[2] = boSketch2.SketchLines.AddByTwoPoints(point3[1], point3[4]);
+            line3[3] = boSketch2.SketchLines.AddByTwoPoints(point3[3], point3[4]);
+            line3[4] = boSketch2.SketchLines.AddByTwoPoints(point3[0], point3[5]);
+            line3[5] = boSketch2.SketchLines.AddByTwoPoints(point3[2], point3[5]);
+
+            Profile boProfileF2 = boSketch2.Profiles.AddForSolid();
+
+            ExtrudeFeature boExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (boProfileF2, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, boProfileF2);
+
+            boSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+            //шайба
+            SketchCircle[] shaiba = new SketchCircle[3];
+            WorkPlane MyWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], -0.8-S3);
+            MyWorkPlane3.Visible = false;
+            PlanarSketch boSketch3 = oCompDef.Sketches.Add(MyWorkPlane3);
+            point3[6] = boSketch3.SketchPoints.Add(oTransGeom2.CreatePoint2d(2 * Otv + 2 * S2 + S3 - 2, 0), false);
+            shaiba[1] = boSketch3.SketchCircles.AddByCenterRadius(point3[6], 1.5);
+            Profile boProfileF3 = boSketch3.Profiles.AddForSolid();
+            ExtrudeFeature boExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (boProfileF3, 0.2, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, boProfileF3);
+            //
+            boSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            //кругорвой срез с двух сторон болта
+            SketchPoint[] point4 = new SketchPoint[10];
+            //верхняя часть
+            point4[0] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (2 * Otv + 2 * S2 + S3 - 2), 1 - 1.8 - S3), false);
+            point4[1] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (2 * Otv + 2 * S2 + S3 - 2), 1 - 1.8 - S3), false);
+            point4[2] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (2 * Otv + 2 * S2 + S3 - 2), 0.5 - 1.8 - S3), false);
+            point4[3] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (2 * Otv + 2 * S2 + S3 - 2), 0), false);
+            point4[4] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (2 * Otv + 2 * S2 + S3 - 2), 5), false);
+            //нижняя часть
+            point4[5] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (2 * Otv + 2 * S2 + S3 - 2), 0 - 1.8 - S3), false);
+            point4[6] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (2 * Otv + 2 * S2 + S3 - 2), 0 - 1.8 - S3), false);
+            point4[7] = boSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (2 * Otv + 2 * S2 + S3 - 2), 0.5 - 1.8 - S3), false);
+
+            SketchLine[] line4 = new SketchLine[8];
+            line4[0] = boSketch2.SketchLines.AddByTwoPoints(point4[0], point4[1]);
+            line4[1] = boSketch2.SketchLines.AddByTwoPoints(point4[0], point4[2]);
+            line4[2] = boSketch2.SketchLines.AddByTwoPoints(point4[1], point4[2]);
+            line4[3] = boSketch2.SketchLines.AddByTwoPoints(point4[3], point4[4]);
+            line4[4] = boSketch2.SketchLines.AddByTwoPoints(point4[5], point4[6]);
+            line4[5] = boSketch2.SketchLines.AddByTwoPoints(point4[5], point4[7]);
+            line4[6] = boSketch2.SketchLines.AddByTwoPoints(point4[6], point4[7]);
+
+            Profile oProfileF11 = default(Profile);
+            oProfileF11 = boSketch2.Profiles.AddForSolid();
+            RevolveFeature revolvefeature2 = oCompDef.Features.RevolveFeatures.AddFull(oProfileF11, line4[3], PartFeatureOperationEnum.kCutOperation);
+            
+            //массив болтов
+            ObjectCollection bolti = ThisApplication.TransientObjects.CreateObjectCollection();
+            bolti.Add(oExtrudeDef6);
+            bolti.Add(oExtrudeDef8);
+            bolti.Add(revolvefeature);
+            bolti.Add(boExtrudeDef1);
+            bolti.Add(boExtrudeDef3);
+            bolti.Add(revolvefeature2);
+            WorkAxis Ось = oCompDef.WorkAxes[2];
+            CircularPatternFeature Массив = oCompDef.Features.CircularPatternFeatures.Add(bolti, Ось, false, Kolb1, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+            #endregion
+            ////////////////////////////////////////////////////////
+            #region между днищем и крышкой
+            /////////////////////////////////////////////////////между днищем и крышкой
+            WorkPlane bmoWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + S2, false);
+            bmoWorkPlane.Visible = false;
+            PlanarSketch omSketch = oCompDef.Sketches.Add(bmoWorkPlane, false);
+            //PlanarSketch boSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+            SketchCircle okr2 = omSketch.SketchCircles.AddByCenterRadius(oTransGeom.CreatePoint2d(0 + D / 2 + S2 * 4 - 3, 0), Db / 2);
+            Profile omP3 = omSketch.Profiles.AddForSolid();
+            ExtrudeFeature omExtrudeDef6 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (omP3, 4 + S2, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, omP3);
+
+            WorkPlane omWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + S2);
+            omWorkPlane.Visible = false;
+            omSketch = oCompDef.Sketches.Add(omWorkPlane);
+
+            SketchPoint[] ompoint1 = new SketchPoint[6];
+            ompoint1[0] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + D / 2 + S2 * 4 - 3, -Sb / 4), false);
+            ompoint1[1] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + D / 2 + S2 * 4 - 3, Sb / 4), false);
+            ompoint1[2] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + D / 2 + S2 * 4 - 3, -Sb / 4), false);
+            ompoint1[3] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + D / 2 + S2 * 4 - 3, Sb / 4), false);
+            ompoint1[4] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + D / 2 + S2 * 4 - 3, Eb / 2), false);
+            ompoint1[5] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + D / 2 + S2 * 4 - 3, -Eb / 2), false);
+
+            SketchLine[] omline1 = new SketchLine[6];
+            omline1[0] = omSketch.SketchLines.AddByTwoPoints(ompoint1[0], ompoint1[1]);
+            omline1[1] = omSketch.SketchLines.AddByTwoPoints(ompoint1[2], ompoint1[3]);
+            omline1[2] = omSketch.SketchLines.AddByTwoPoints(ompoint1[1], ompoint1[4]);
+            omline1[3] = omSketch.SketchLines.AddByTwoPoints(ompoint1[3], ompoint1[4]);
+            omline1[4] = omSketch.SketchLines.AddByTwoPoints(ompoint1[0], ompoint1[5]);
+            omline1[5] = omSketch.SketchLines.AddByTwoPoints(ompoint1[2], ompoint1[5]);
+
+            Profile omProfileF = (Profile)omSketch.Profiles.AddForSolid();
+
+            ExtrudeFeature omExtrudeDef8 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (omProfileF, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, omProfileF);
+
+            WorkPlane omWorkPlane1 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], "0");
+            omWorkPlane1.Visible = false;
+            omSketch = oCompDef.Sketches.Add(omWorkPlane1);
+            // Создание файла эскиза.
+
+            TransientGeometry omTransGeom1 = oApp.TransientGeometry;
+            Transaction omTransF1 = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+
+            SketchPoint[] ompoint2 = new SketchPoint[5];
+            ompoint2[0] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D / 2 + S2 * 4 - 3), 1 + H6 + S2), false);
+            ompoint2[1] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (D / 2 + S2 * 4 - 3), 1 + H6 + S2), false);
+            ompoint2[2] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D / 2 + S2 * 4 - 3), 0.5 + H6 + S2), false);
+            ompoint2[3] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D / 2 + S2 * 4 - 3), 0 + H6 + S2), false);
+            ompoint2[4] = omSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D / 2 + S2 * 4 - 3), 5 + H6 + S2), false);
+
+            SketchLine[] omline2 = new SketchLine[4];
+            omline2[0] = omSketch.SketchLines.AddByTwoPoints(ompoint2[0], ompoint2[1]);
+            omline2[1] = omSketch.SketchLines.AddByTwoPoints(ompoint2[0], ompoint2[2]);
+            omline2[2] = omSketch.SketchLines.AddByTwoPoints(ompoint2[1], ompoint2[2]);
+            omline2[3] = omSketch.SketchLines.AddByTwoPoints(ompoint2[3], ompoint2[4]);
+
+            omTransF1.End();
+            Profile omProfileF1 = default(Profile);
+            omProfileF1 = omSketch.Profiles.AddForSolid();
+            RevolveFeature omrevolvefeature = oCompDef.Features.RevolveFeatures.AddFull(omProfileF1, omline2[3], PartFeatureOperationEnum.kCutOperation);
+            //////////////////////////////////////////////////////////////
+            //гайки
+            //////////////////////////////////////////////////////////////
+            WorkPlane omWorkPlane2 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], +H6 - S2 - 1.2);
+            omWorkPlane2.Visible = false;
+            PlanarSketch omSketch2 = oCompDef.Sketches.Add(omWorkPlane2);
+            TransientGeometry omTransGeom2 = oApp.TransientGeometry;
+
+            SketchPoint[] ompoint3 = new SketchPoint[7];
+            ompoint3[0] = omSketch2.SketchPoints.Add(omTransGeom2.CreatePoint2d(Sb / 2 + D / 2 + S2 * 4 - 3, -Sb / 4), false);
+            ompoint3[1] = omSketch2.SketchPoints.Add(omTransGeom2.CreatePoint2d(Sb / 2 + D / 2 + S2 * 4 - 3, Sb / 4), false);
+            ompoint3[2] = omSketch2.SketchPoints.Add(omTransGeom2.CreatePoint2d(-Sb / 2 + D / 2 + S2 * 4 - 3, -Sb / 4), false);
+            ompoint3[3] = omSketch2.SketchPoints.Add(omTransGeom2.CreatePoint2d(-Sb / 2 + D / 2 + S2 * 4 - 3, Sb / 4), false);
+            ompoint3[4] = omSketch2.SketchPoints.Add(omTransGeom2.CreatePoint2d(0 + D / 2 + S2 * 4 - 3, Eb / 2), false);
+            ompoint3[5] = omSketch2.SketchPoints.Add(omTransGeom2.CreatePoint2d(0 + D / 2 + S2 * 4 - 3, -Eb / 2), false);
+
+            SketchLine[] omline3 = new SketchLine[6];
+            omline3[0] = omSketch2.SketchLines.AddByTwoPoints(ompoint3[0], ompoint3[1]);
+            omline3[1] = omSketch2.SketchLines.AddByTwoPoints(ompoint3[2], ompoint3[3]);
+            omline3[2] = omSketch2.SketchLines.AddByTwoPoints(ompoint3[1], ompoint3[4]);
+            omline3[3] = omSketch2.SketchLines.AddByTwoPoints(ompoint3[3], ompoint3[4]);
+            omline3[4] = omSketch2.SketchLines.AddByTwoPoints(ompoint3[0], ompoint3[5]);
+            omline3[5] = omSketch2.SketchLines.AddByTwoPoints(ompoint3[2], ompoint3[5]);
+
+            Profile omProfileF2 = omSketch2.Profiles.AddForSolid();
+
+            ExtrudeFeature omExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (omProfileF2, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, omProfileF2);
+
+            omSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+            //шайба
+            SketchCircle[] omshaiba = new SketchCircle[3];
+            WorkPlane omWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], +H6 - S2 -0.2);
+            omWorkPlane3.Visible = false;
+            PlanarSketch omSketch3 = oCompDef.Sketches.Add(omWorkPlane3);
+            ompoint3[6] = omSketch3.SketchPoints.Add(oTransGeom2.CreatePoint2d(+D / 2 + S2 * 4 - 3, 0), false);
+            omshaiba[1] = omSketch3.SketchCircles.AddByCenterRadius(ompoint3[6], 1.5);
+            Profile omProfileF3 = omSketch3.Profiles.AddForSolid();
+            ExtrudeFeature omExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (omProfileF3, 0.2, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, omProfileF3);
+            //
+            omSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            //кругорвой срез с двух сторон болта
+            SketchPoint[] ompoint4 = new SketchPoint[10];
+            //верхняя часть
+            ompoint4[0] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D / 2 + S2 * 4 - 3), 1 + H6 - S2 - 1.2), false);
+            ompoint4[1] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (D / 2 + S2 * 4 - 3), 1 + H6 - S2 - 1.2), false);
+            ompoint4[2] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D / 2 + S2 * 4 - 3), 0.5 + H6 - S2 - 1.2), false);
+            ompoint4[3] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D / 2 + S2 * 4 - 3), 0 + H6 - S2 - 1.2), false);
+            ompoint4[4] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D / 2 + S2 * 4 - 3), 5 + H6 - S2 - 1.2), false);
+            //нижняя часть
+            ompoint4[5] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D / 2 + S2 * 4 - 3), 0 + H6 - S2 - 1.2), false);
+            ompoint4[6] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (D / 2 + S2 * 4 - 3), 0 + H6 - S2 - 1.2), false);
+            ompoint4[7] = omSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D / 2 + S2 * 4 - 3), 0.5 + H6 - S2 - 1.2), false);
+
+            SketchLine[] omline4 = new SketchLine[8];
+            omline4[0] = omSketch2.SketchLines.AddByTwoPoints(ompoint4[0], ompoint4[1]);
+            omline4[1] = omSketch2.SketchLines.AddByTwoPoints(ompoint4[0], ompoint4[2]);
+            omline4[2] = omSketch2.SketchLines.AddByTwoPoints(ompoint4[1], ompoint4[2]);
+            omline4[3] = omSketch2.SketchLines.AddByTwoPoints(ompoint4[3], ompoint4[4]);
+            omline4[4] = omSketch2.SketchLines.AddByTwoPoints(ompoint4[5], ompoint4[6]);
+            omline4[5] = omSketch2.SketchLines.AddByTwoPoints(ompoint4[5], ompoint4[7]);
+            omline4[6] = omSketch2.SketchLines.AddByTwoPoints(ompoint4[6], ompoint4[7]);
+
+            Profile omProfileF11 = omSketch2.Profiles.AddForSolid();
+            RevolveFeature omrevolvefeature2 = oCompDef.Features.RevolveFeatures.AddFull(omProfileF11, omline4[3], PartFeatureOperationEnum.kCutOperation);
+
+            ObjectCollection ombolti = ThisApplication.TransientObjects.CreateObjectCollection();      
+            ombolti.Add(omExtrudeDef6);
+            ombolti.Add(omExtrudeDef8);
+            ombolti.Add(omrevolvefeature);
+            ombolti.Add(omExtrudeDef1);
+            ombolti.Add(omExtrudeDef3);
+            ombolti.Add(omrevolvefeature2);
+            WorkAxis omОсь = oCompDef.WorkAxes[2];
+            CircularPatternFeature omМассив = oCompDef.Features.CircularPatternFeatures.Add(ombolti, omОсь, false, Kolb3, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+
+            #endregion
+            ////////////////////////////////////////////////////////
+            #region отверстие Ц
+            /////////////////////////////////////////////////////отверстие Ц
+            WorkPlane okWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 2 * S3, false);
+            okWorkPlane.Visible = false;
+            PlanarSketch okSketch = oCompDef.Sketches.Add(okWorkPlane, false);
+            //PlanarSketch boSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+            SketchCircle okokr1 = default(SketchCircle);
+            okokr1 = okSketch.SketchCircles.AddByCenterRadius(oTransGeom.CreatePoint2d(Otv + S2 + 4 * S3, 0), Db / 2);
+            Profile okP3 = okSketch.Profiles.AddForSolid();
+            ExtrudeFeature okExtrudeDef6 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                (okP3, 3, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, okP3);
+
+            WorkPlane okMyWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 2 * S3);
+            okMyWorkPlane.Visible = false;
+            okSketch = oCompDef.Sketches.Add(okMyWorkPlane);
+
+            SketchPoint[] okpoint1 = new SketchPoint[6];
+            okpoint1[0] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + Otv + S2 + 4 * S3, -Sb / 4), false);
+            okpoint1[1] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + Otv + S2 + 4 * S3, Sb / 4), false);
+            okpoint1[2] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + Otv + S2 + 4 * S3, -Sb / 4), false);
+            okpoint1[3] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + Otv + S2 + 4 * S3, Sb / 4), false);
+            okpoint1[4] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + Otv + S2 + 4 * S3, Eb / 2), false);
+            okpoint1[5] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + Otv + S2 + 4 * S3, -Eb / 2), false);
+
+            SketchLine[] okline1 = new SketchLine[6];
+            okline1[0] = okSketch.SketchLines.AddByTwoPoints(okpoint1[0], okpoint1[1]);
+            okline1[1] = okSketch.SketchLines.AddByTwoPoints(okpoint1[2], okpoint1[3]);
+            okline1[2] = okSketch.SketchLines.AddByTwoPoints(okpoint1[1], okpoint1[4]);
+            okline1[3] = okSketch.SketchLines.AddByTwoPoints(okpoint1[3], okpoint1[4]);
+            okline1[4] = okSketch.SketchLines.AddByTwoPoints(okpoint1[0], okpoint1[5]);
+            okline1[5] = okSketch.SketchLines.AddByTwoPoints(okpoint1[2], okpoint1[5]);
+
+            Profile okProfileF = (Profile)okSketch.Profiles.AddForSolid();
+
+            ExtrudeFeature okExtrudeDef8 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (okProfileF, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, okProfileF);
+
+            WorkPlane okMyWorkPlane1 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], "0");
+            okMyWorkPlane1.Visible = false;
+            okSketch = oCompDef.Sketches.Add(okMyWorkPlane1);
+            // Создание файла эскиза.
+
+            TransientGeometry okTransGeom1 = default(TransientGeometry);
+            okTransGeom1 = oApp.TransientGeometry;
+            Transaction okTransF1 = oApp.TransactionManager.StartTransaction
+            (oApp.ActiveDocument, "Create Triangle Sample");
+
+
+            SketchPoint[] okpoint2 = new SketchPoint[5];
+            okpoint2[0] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (Otv + S2 + 4 * S3), 1 + H6 + H7 + 2 * S3), false);
+            okpoint2[1] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (Otv + S2 + 4 * S3), 1 + H6 + H7 + 2 * S3), false);
+            okpoint2[2] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (Otv + S2 + 4 * S3), 0.5 + H6 + H7 + 2 * S3), false);
+            okpoint2[3] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (Otv + S2 + 4 * S3), 0 + H6 + H7 + 2 * S3), false);
+            okpoint2[4] = okSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (Otv + S2 + 4 * S3), 5 + H6 + H7 + 2 * S3), false);
+
+            SketchLine[] okline2 = new SketchLine[4];
+            okline2[0] = okSketch.SketchLines.AddByTwoPoints(okpoint2[0], okpoint2[1]);
+            okline2[1] = okSketch.SketchLines.AddByTwoPoints(okpoint2[0], okpoint2[2]);
+            okline2[2] = okSketch.SketchLines.AddByTwoPoints(okpoint2[1], okpoint2[2]);
+            okline2[3] = okSketch.SketchLines.AddByTwoPoints(okpoint2[3], okpoint2[4]);
+
+            okTransF1.End();
+            Profile okProfileF1 = default(Profile);
+            okProfileF1 = okSketch.Profiles.AddForSolid();
+            RevolveFeature okrevolvefeature = oCompDef.Features.RevolveFeatures.AddFull(okProfileF1, okline2[3], PartFeatureOperationEnum.kCutOperation);
+            //////////////////////////////////////////////////////////////
+            //гайки
+            //////////////////////////////////////////////////////////////
+            WorkPlane okMyWorkPlane2 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 - 1.2);
+            okMyWorkPlane2.Visible = false;
+            PlanarSketch okSketch2 = oCompDef.Sketches.Add(okMyWorkPlane2);
+            TransientGeometry okTransGeom2 = oApp.TransientGeometry;
+
+            SketchPoint[] okpoint3 = new SketchPoint[7];
+            okpoint3[0] = okSketch2.SketchPoints.Add(okTransGeom2.CreatePoint2d(Sb / 2 + Otv + S2 + 4 * S3, -Sb / 4), false);
+            okpoint3[1] = okSketch2.SketchPoints.Add(okTransGeom2.CreatePoint2d(Sb / 2 + Otv + S2 + 4 * S3, Sb / 4), false);
+            okpoint3[2] = okSketch2.SketchPoints.Add(okTransGeom2.CreatePoint2d(-Sb / 2 + Otv + S2 + 4 * S3, -Sb / 4), false);
+            okpoint3[3] = okSketch2.SketchPoints.Add(okTransGeom2.CreatePoint2d(-Sb / 2 + Otv + S2 + 4 * S3, Sb / 4), false);
+            okpoint3[4] = okSketch2.SketchPoints.Add(okTransGeom2.CreatePoint2d(0 + Otv + S2 + 4 * S3, Eb / 2), false);
+            okpoint3[5] = okSketch2.SketchPoints.Add(okTransGeom2.CreatePoint2d(0 + Otv + S2 + 4 * S3, -Eb / 2), false);
+
+            SketchLine[] okline3 = new SketchLine[6];
+            okline3[0] = okSketch2.SketchLines.AddByTwoPoints(okpoint3[0], okpoint3[1]);
+            okline3[1] = okSketch2.SketchLines.AddByTwoPoints(okpoint3[2], okpoint3[3]);
+            okline3[2] = okSketch2.SketchLines.AddByTwoPoints(okpoint3[1], okpoint3[4]);
+            okline3[3] = okSketch2.SketchLines.AddByTwoPoints(okpoint3[3], okpoint3[4]);
+            okline3[4] = okSketch2.SketchLines.AddByTwoPoints(okpoint3[0], okpoint3[5]);
+            okline3[5] = okSketch2.SketchLines.AddByTwoPoints(okpoint3[2], okpoint3[5]);
+
+            Profile okProfileF2 = okSketch2.Profiles.AddForSolid();
+
+            ExtrudeFeature okExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (okProfileF2, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, okProfileF2);
+
+            okSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+
+            //шайба
+            SketchCircle[] okshaiba = new SketchCircle[3];
+            WorkPlane okWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 - 0.2);
+            okWorkPlane3.Visible = false;
+            PlanarSketch okSketch3 = oCompDef.Sketches.Add(okWorkPlane3);
+            okpoint3[6] = okSketch3.SketchPoints.Add(oTransGeom2.CreatePoint2d(Otv + S2 + 4 * S3, 0), false);
+            okshaiba[1] = okSketch3.SketchCircles.AddByCenterRadius(okpoint3[6], 1.5);
+            Profile okProfileF3 = okSketch3.Profiles.AddForSolid();
+            ExtrudeFeature okExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+           (okProfileF3, 0.2, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+           PartFeatureOperationEnum.kJoinOperation, okProfileF3);
+            //
+
+            okSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+            //кругорвой срез с двух сторон болта
+            SketchPoint[] okpoint4 = new SketchPoint[10];
+            //верхняя часть
+            okpoint4[0] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (Otv + S2 + 4 * S3), 1 + H6 + H7 - 1.2), false);
+            okpoint4[1] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (Otv + S2 + 4 * S3), 1 + H6 + H7 - 1.2), false);
+            okpoint4[2] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (Otv + S2 + 4 * S3), 0.5 + H6 + H7 - 1.2), false);
+            okpoint4[3] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (Otv + S2 + 4 * S3), 0), false);
+            okpoint4[4] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (Otv + S2 + 4 * S3), 5), false);
+            //нижняя часть
+            okpoint4[5] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (Otv + S2 + 4 * S3), 0 + H6 + H7 - 1.2), false);
+            okpoint4[6] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (Otv + S2 + 4 * S3), 0 + H6 + H7 - 1.2), false);
+            okpoint4[7] = okSketch2.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (Otv + S2 + 4 * S3), 0.5 + H6 + H7 - 1.2), false);
+
+            SketchLine[] okline4 = new SketchLine[8];
+            okline4[0] = okSketch2.SketchLines.AddByTwoPoints(okpoint4[0], okpoint4[1]);
+            okline4[1] = okSketch2.SketchLines.AddByTwoPoints(okpoint4[0], okpoint4[2]);
+            okline4[2] = okSketch2.SketchLines.AddByTwoPoints(okpoint4[1], okpoint4[2]);
+            okline4[3] = okSketch2.SketchLines.AddByTwoPoints(okpoint4[3], okpoint4[4]);
+            okline4[4] = okSketch2.SketchLines.AddByTwoPoints(okpoint4[5], okpoint4[6]);
+            okline4[5] = okSketch2.SketchLines.AddByTwoPoints(okpoint4[5], okpoint4[7]);
+            okline4[6] = okSketch2.SketchLines.AddByTwoPoints(okpoint4[6], okpoint4[7]);
+
+            Profile okProfileF11 = default(Profile);
+            okProfileF11 = okSketch2.Profiles.AddForSolid();
+            RevolveFeature okrevolvefeature2 = oCompDef.Features.RevolveFeatures.AddFull(okProfileF11, okline4[3], PartFeatureOperationEnum.kCutOperation);
+
+            
+
+            //массив болтов
+            ObjectCollection okbolti = ThisApplication.TransientObjects.CreateObjectCollection();
+            okbolti.Add(okExtrudeDef6);
+            okbolti.Add(okExtrudeDef8);
+            okbolti.Add(okrevolvefeature);
+            okbolti.Add(okExtrudeDef1);
+            okbolti.Add(okExtrudeDef3);
+            okbolti.Add(okrevolvefeature2);
+            WorkAxis okОсь = oCompDef.WorkAxes[2];
+            CircularPatternFeature okМассив = oCompDef.Features.CircularPatternFeatures.Add(okbolti, okОсь, false, Kolb2, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+
+            #endregion
+            ////////////////////////////////////////////////////////
+            #region отверстия над Л
+
+            if ((comboBox70.Text == "0,4-12-01") || (comboBox70.Text == "0,63-0-12-01"))
+            {
+                WorkPlane olWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 2 * S3, false);
+                olWorkPlane.Visible = false;
+                PlanarSketch olSketch = oCompDef.Sketches.Add(olWorkPlane, false);
+                SketchCircle olokr1 = default(SketchCircle);
+                olokr1 = olSketch.SketchCircles.AddByCenterRadius(oTransGeom.CreatePoint2d(D2 / 2 - 0.8 * X, 0), Db / 2);
+                Profile oloP3 = olSketch.Profiles.AddForSolid();
+                ExtrudeFeature olExtrudeDef6 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                    (oloP3, 3.5, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oloP3);
+
+                WorkPlane olMyWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 2 * S3);
+                olMyWorkPlane.Visible = false;
+                olSketch = oCompDef.Sketches.Add(olMyWorkPlane);
+
+                SketchPoint[] olpoint1 = new SketchPoint[6];
+                olpoint1[0] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + D2 / 2 - 0.8 * X, -Sb / 4), false);
+                olpoint1[1] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + D2 / 2 - 0.8 * X, Sb / 4), false);
+                olpoint1[2] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + D2 / 2 - 0.8 * X, -Sb / 4), false);
+                olpoint1[3] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + D2 / 2 - 0.8 * X, Sb / 4), false);
+                olpoint1[4] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + D2 / 2 - 0.8 * X, Eb / 2), false);
+                olpoint1[5] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + D2 / 2 - 0.8 * X, -Eb / 2), false);
+
+                SketchLine[] olline1 = new SketchLine[6];
+                olline1[0] = olSketch.SketchLines.AddByTwoPoints(olpoint1[0], olpoint1[1]);
+                olline1[1] = olSketch.SketchLines.AddByTwoPoints(olpoint1[2], olpoint1[3]);
+                olline1[2] = olSketch.SketchLines.AddByTwoPoints(olpoint1[1], olpoint1[4]);
+                olline1[3] = olSketch.SketchLines.AddByTwoPoints(olpoint1[3], olpoint1[4]);
+                olline1[4] = olSketch.SketchLines.AddByTwoPoints(olpoint1[0], olpoint1[5]);
+                olline1[5] = olSketch.SketchLines.AddByTwoPoints(olpoint1[2], olpoint1[5]);
+
+                Profile oloProfileF = (Profile)olSketch.Profiles.AddForSolid();
+
+                ExtrudeFeature oloExtrudeDef8 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+               (oloProfileF, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+               PartFeatureOperationEnum.kJoinOperation, oloProfileF);
+
+                WorkPlane olMyWorkPlane1 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], "0");
+                olMyWorkPlane1.Visible = false;
+                olSketch = oCompDef.Sketches.Add(olMyWorkPlane1);
+                // Создание файла эскиза.
+
+                TransientGeometry oloTransGeom1 = oApp.TransientGeometry;
+                Transaction oloTransF1 = oApp.TransactionManager.StartTransaction
+                (oApp.ActiveDocument, "Create Triangle Sample");
+
+
+                SketchPoint[] olpoint2 = new SketchPoint[5];
+                olpoint2[0] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D2 / 2 - 0.8 * X), 1 + H6 + H7 + 2 * S3), false);
+                olpoint2[1] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (D2 / 2 - 0.8 * X), 1 + H6 + H7 + 2 * S3), false);
+                olpoint2[2] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D2 / 2 - 0.8 * X), 0.5 + H6 + H7 + 2 * S3), false);
+                olpoint2[3] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D2 / 2 - 0.8 * X), 0 + H6 + H7 + 2 * S3), false);
+                olpoint2[4] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D2 / 2 - 0.8 * X), 5 + H6 + H7 + 2 * S3), false);
+
+                SketchLine[] olline2 = new SketchLine[4];
+                olline2[0] = olSketch.SketchLines.AddByTwoPoints(olpoint2[0], olpoint2[1]);
+                olline2[1] = olSketch.SketchLines.AddByTwoPoints(olpoint2[0], olpoint2[2]);
+                olline2[2] = olSketch.SketchLines.AddByTwoPoints(olpoint2[1], olpoint2[2]);
+                olline2[3] = olSketch.SketchLines.AddByTwoPoints(olpoint2[3], olpoint2[4]);
+
+                oloTransF1.End();
+                Profile oloProfileF1 = olSketch.Profiles.AddForSolid();
+                RevolveFeature olrevolvefeature = oCompDef.Features.RevolveFeatures.AddFull(oloProfileF1, olline2[3], PartFeatureOperationEnum.kCutOperation);
+                //////////////////////////////////////////////////////////////
+                //гайки
+                //////////////////////////////////////////////////////////////
+                WorkPlane olMyWorkPlane2 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 - S3 - 1.2);
+                olMyWorkPlane2.Visible = false;
+                PlanarSketch olSketch2 = oCompDef.Sketches.Add(olMyWorkPlane2);
+                TransientGeometry oloTransGeom2 = oApp.TransientGeometry;
+
+                SketchPoint[] olpoint3 = new SketchPoint[7];
+                olpoint3[0] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(Sb / 2 + D2 / 2 - 0.8 * X, -Sb / 4), false);
+                olpoint3[1] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(Sb / 2 + D2 / 2 - 0.8 * X, Sb / 4), false);
+                olpoint3[2] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(-Sb / 2 + D2 / 2 - 0.8 * X, -Sb / 4), false);
+                olpoint3[3] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(-Sb / 2 + D2 / 2 - 0.8 * X, Sb / 4), false);
+                olpoint3[4] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 + D2 / 2 - 0.8 * X, Eb / 2), false);
+                olpoint3[5] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 + D2 / 2 - 0.8 * X, -Eb / 2), false);
+
+                SketchLine[] olline3 = new SketchLine[6];
+                olline3[0] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[0], olpoint3[1]);
+                olline3[1] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[2], olpoint3[3]);
+                olline3[2] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[1], olpoint3[4]);
+                olline3[3] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[3], olpoint3[4]);
+                olline3[4] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[0], olpoint3[5]);
+                olline3[5] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[2], olpoint3[5]);
+
+                Profile olProfileF2 = olSketch2.Profiles.AddForSolid();
+
+                ExtrudeFeature olExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+               (olProfileF2, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+               PartFeatureOperationEnum.kJoinOperation, olProfileF2);
+
+                olSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+
+                //шайба
+                SketchCircle[] olshaiba = new SketchCircle[3];
+                WorkPlane olWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 - S3 - 0.2);
+                olWorkPlane3.Visible = false;
+                PlanarSketch olSketch3 = oCompDef.Sketches.Add(olWorkPlane3);
+                olpoint3[6] = olSketch3.SketchPoints.Add(oloTransGeom2.CreatePoint2d(D2 / 2 - 0.8 * X, 0 ), false);
+                olshaiba[1] = olSketch3.SketchCircles.AddByCenterRadius(olpoint3[6], 1.5);
+                Profile olProfileF3 = olSketch3.Profiles.AddForSolid();
+                ExtrudeFeature olExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+               (olProfileF3, 0.2, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+               PartFeatureOperationEnum.kJoinOperation, olProfileF3);
+                //
+
+                olSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+                //кругорвой срез с двух сторон болта
+                SketchPoint[] olpoint4 = new SketchPoint[10];
+                //верхняя часть
+                olpoint4[0] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - 0.8 * X), 1 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[1] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(1 - (D2 / 2 - 0.8 * X), 1 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[2] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - 0.8 * X), 0.5 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[3] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 - (D2 / 2 - 0.8 * X), 0), false);
+                olpoint4[4] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 - (D2 / 2 - 0.8 * X), 5), false);
+                //нижняя часть
+                olpoint4[5] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - 0.8 * X), 0 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[6] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(1 - (D2 / 2 - 0.8 * X), 0 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[7] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - 0.8 * X), 0.5 + H6 + H7 - S3 - 1.2), false);
+
+                SketchLine[] olline4 = new SketchLine[8];
+                olline4[0] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[0], olpoint4[1]);
+                olline4[1] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[0], olpoint4[2]);
+                olline4[2] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[1], olpoint4[2]);
+                olline4[3] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[3], olpoint4[4]);
+                olline4[4] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[5], olpoint4[6]);
+                olline4[5] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[5], olpoint4[7]);
+                olline4[6] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[6], olpoint4[7]);
+
+                Profile oloProfileF11 = olSketch2.Profiles.AddForSolid();
+                RevolveFeature olrevolvefeature2 = oCompDef.Features.RevolveFeatures.AddFull(oloProfileF11, olline4[3], PartFeatureOperationEnum.kCutOperation);
+
+                //массив болтов
+                PlanarSketch olSketch20 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+                olpoint4[8] = olSketch20.SketchPoints.Add(oTransGeom.CreatePoint2d(-D2 / 2, 0), false);
+                olpoint4[9] = olSketch20.SketchPoints.Add(oTransGeom.CreatePoint2d(-D2 / 2, 10), false);
+                ObjectCollection olbolti = ThisApplication.TransientObjects.CreateObjectCollection();
+                olbolti.Add(olExtrudeDef6);
+                olbolti.Add(oloExtrudeDef8);
+                olbolti.Add(olrevolvefeature);
+                olbolti.Add(olExtrudeDef1);
+                olbolti.Add(olExtrudeDef3);
+                olbolti.Add(olrevolvefeature2);
+                olline4[7] = olSketch20.SketchLines.AddByTwoPoints(olpoint4[8], olpoint4[9]);
+                WorkAxis olОсь = oCompDef.WorkAxes.AddByLine(olline4[7], true);
+                CircularPatternFeature olМассив = oCompDef.Features.CircularPatternFeatures.Add(olbolti, olОсь, false, Kolb4, "360 degree", true, PatternComputeTypeEnum.kIdenticalCompute);
+            }
+
+            #endregion
+            ////////////////////////////////////////////////////////
+            if ((comboBox70.Text == "1,25-0-12-01") || (comboBox70.Text == "2,0-0-12-01"))
+            {
+                boltielips(25, 0, oPartDoc, oCompDef);
+                boltielips(22.91288, 14, oPartDoc, oCompDef);
+                boltielips(15, 28, oPartDoc, oCompDef);
+                boltielips(0, 35, oPartDoc, oCompDef);
+
+                boltielips(-15, 28, oPartDoc, oCompDef);
+                boltielips(-22.91288, 14, oPartDoc, oCompDef);
+                boltielips(-25, 0, oPartDoc, oCompDef);
+
+                boltielips(-22.91288, -14, oPartDoc, oCompDef);
+                boltielips(-15, -28, oPartDoc, oCompDef);
+                boltielips(0, -35, oPartDoc, oCompDef);
+                boltielips(15, -28, oPartDoc, oCompDef);
+                boltielips(22.91288, -14, oPartDoc, oCompDef);
+               
+            }
+            Profile oProfile = default(Profile);
+            oProfile = boSketch.Profiles.AddForSolid();
+            saveFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            saveFileDialog1.Title = Text;
+            saveFileDialog1.FileName = oPartDoc.DisplayName;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(saveFileDialog1.FileName))
+                {
+                    oPartDoc.SaveAs(saveFileDialog1.FileName, false);
+                    oFileName["Болты"] = saveFileDialog1.FileName;
+                }
+            }
+
+            D = D * 10;
+            D1 = D1 * 10;
+            D2 = D2 * 10;
+            D3 = D3 * 10;
+            H = H * 10;
+            H1 = H1 * 10;
+            H2 = H2 * 10;
+            H3 = H3 * 10;
+            H4 = H4 * 10;
+            H5 = H5 * 10;
+            H6 = H6 * 10;
+            H7 = H7 * 10;
+            H8 = H8 * 10;
+            H9 = H9 * 10;
+            H10 = H10 * 10;
+            L = L * 10;
+            L1 = L1 * 10;
+            L2 = L2 * 10;
+            L3 = L3 * 10;
+            S = S * 10;
+            S1 = S1 * 10;
+            S2 = S2 * 10;
+            S3 = S3 * 10;
+            d = d * 10;
+            Otv = Otv * 20;
+            X = X * 10;
+            Y = Y * 10;
+        }
+        public void boltielips(double xx, double yy, PartDocument oPartDoc, PartComponentDefinition oCompDef)
+        {
+                xx = 0.8 * xx;
+                yy = -0.8 * yy;
+
+                double Db = 1.6, Kb = 1, Sb = 2.4, Eb = 2.6;
+                Inventor.Application oApp = (Inventor.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Inventor.Application");
+           
+                PlanarSketch oSketch = oCompDef.Sketches.Add(oCompDef.WorkPlanes[3]);
+                TransientGeometry oTransGeom = oApp.TransientGeometry;
+                Transaction oTrans = oApp.TransactionManager.StartTransaction(oApp.ActiveDocument, "Create Triangle Sample");
+
+                SketchPoint[] Точка = new SketchPoint[200];
+                SketchLine[] Линия = new SketchLine[200];
+
+
+
+                WorkPlane olWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 2 * S3, false);
+                olWorkPlane.Visible = false;
+                PlanarSketch olSketch = oCompDef.Sketches.Add(olWorkPlane, false);
+                SketchCircle olokr1 = default(SketchCircle);
+                olokr1 = olSketch.SketchCircles.AddByCenterRadius(oTransGeom.CreatePoint2d(D2 / 2 - xx, yy), Db / 2);
+                Profile oloP3 = olSketch.Profiles.AddForSolid();
+                ExtrudeFeature olExtrudeDef6 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+                    (oloP3, 4, PartFeatureExtentDirectionEnum.kNegativeExtentDirection, PartFeatureOperationEnum.kJoinOperation, oloP3);
+
+                WorkPlane olMyWorkPlane = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 + 2 * S3);
+                olMyWorkPlane.Visible = false;
+                olSketch = oCompDef.Sketches.Add(olMyWorkPlane);
+
+                SketchPoint[] olpoint1 = new SketchPoint[6];
+                olpoint1[0] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + D2 / 2 - xx, -Sb / 4+yy), false);
+                olpoint1[1] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(Sb / 2 + D2 / 2 - xx, Sb / 4 + yy), false);
+                olpoint1[2] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + D2 / 2 - xx, -Sb / 4 + yy), false);
+                olpoint1[3] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(-Sb / 2 + D2 / 2 - xx, Sb / 4 + yy), false);
+                olpoint1[4] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + D2 / 2 - xx, Eb / 2 + yy), false);
+                olpoint1[5] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 + D2 / 2 - xx, -Eb / 2 + yy), false);
+
+                SketchLine[] olline1 = new SketchLine[6];
+                olline1[0] = olSketch.SketchLines.AddByTwoPoints(olpoint1[0], olpoint1[1]);
+                olline1[1] = olSketch.SketchLines.AddByTwoPoints(olpoint1[2], olpoint1[3]);
+                olline1[2] = olSketch.SketchLines.AddByTwoPoints(olpoint1[1], olpoint1[4]);
+                olline1[3] = olSketch.SketchLines.AddByTwoPoints(olpoint1[3], olpoint1[4]);
+                olline1[4] = olSketch.SketchLines.AddByTwoPoints(olpoint1[0], olpoint1[5]);
+                olline1[5] = olSketch.SketchLines.AddByTwoPoints(olpoint1[2], olpoint1[5]);
+
+                Profile oloProfileF = (Profile)olSketch.Profiles.AddForSolid();
+
+                ExtrudeFeature oloExtrudeDef8 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+               (oloProfileF, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+               PartFeatureOperationEnum.kJoinOperation, oloProfileF);
+
+                WorkPlane olMyWorkPlane1 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], yy);
+                olMyWorkPlane1.Visible = false;
+                olSketch = oCompDef.Sketches.Add(olMyWorkPlane1);
+                // Создание файла эскиза.
+
+                TransientGeometry oloTransGeom1 = oApp.TransientGeometry;
+                Transaction oloTransF1 = oApp.TransactionManager.StartTransaction(oApp.ActiveDocument, "Create Triangle Sample");
+
+
+                SketchPoint[] olpoint2 = new SketchPoint[5];
+                olpoint2[0] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D2 / 2 - xx), 1 + H6 + H7 + 2 * S3), false);
+                olpoint2[1] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(1 - (D2 / 2 - xx), 1 + H6 + H7 + 2 * S3), false);
+                olpoint2[2] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(2 - (D2 / 2 - xx), 0.5 + H6 + H7 + 2 * S3), false);
+                olpoint2[3] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D2 / 2 - xx), 0 + H6 + H7 + 2 * S3), false);
+                olpoint2[4] = olSketch.SketchPoints.Add(oTransGeom.CreatePoint2d(0 - (D2 / 2 - xx), 5 + H6 + H7 + 2 * S3), false);
+
+                SketchLine[] olline2 = new SketchLine[4];
+                olline2[0] = olSketch.SketchLines.AddByTwoPoints(olpoint2[0], olpoint2[1]);
+                olline2[1] = olSketch.SketchLines.AddByTwoPoints(olpoint2[0], olpoint2[2]);
+                olline2[2] = olSketch.SketchLines.AddByTwoPoints(olpoint2[1], olpoint2[2]);
+                olline2[3] = olSketch.SketchLines.AddByTwoPoints(olpoint2[3], olpoint2[4]);
+
+                oloTransF1.End();
+                Profile oloProfileF1 = olSketch.Profiles.AddForSolid();
+                RevolveFeature olrevolvefeature = oCompDef.Features.RevolveFeatures.AddFull(oloProfileF1, olline2[3], PartFeatureOperationEnum.kCutOperation);
+                //////////////////////////////////////////////////////////////
+                //гайки
+                //////////////////////////////////////////////////////////////
+                WorkPlane olMyWorkPlane2 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 - S3 - 1.2);
+                olMyWorkPlane2.Visible = false;
+                PlanarSketch olSketch2 = oCompDef.Sketches.Add(olMyWorkPlane2);
+                TransientGeometry oloTransGeom2 = oApp.TransientGeometry;
+
+                SketchPoint[] olpoint3 = new SketchPoint[7];
+                olpoint3[0] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(Sb / 2 + D2 / 2 - xx, -Sb / 4 + yy), false);
+                olpoint3[1] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(Sb / 2 + D2 / 2 - xx, Sb / 4 + yy), false);
+                olpoint3[2] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(-Sb / 2 + D2 / 2 - xx, -Sb / 4 + yy), false);
+                olpoint3[3] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(-Sb / 2 + D2 / 2 - xx, Sb / 4 + yy), false);
+                olpoint3[4] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 + D2 / 2 - xx, Eb / 2 + yy), false);
+                olpoint3[5] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 + D2 / 2 - xx, -Eb / 2 + yy), false);
+
+                SketchLine[] olline3 = new SketchLine[6];
+                olline3[0] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[0], olpoint3[1]);
+                olline3[1] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[2], olpoint3[3]);
+                olline3[2] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[1], olpoint3[4]);
+                olline3[3] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[3], olpoint3[4]);
+                olline3[4] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[0], olpoint3[5]);
+                olline3[5] = olSketch2.SketchLines.AddByTwoPoints(olpoint3[2], olpoint3[5]);
+
+                Profile olProfileF2 = olSketch2.Profiles.AddForSolid();
+
+                ExtrudeFeature olExtrudeDef1 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+               (olProfileF2, Kb, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+               PartFeatureOperationEnum.kJoinOperation, olProfileF2);
+
+                WorkPlane olMyWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[3], yy);
+                olMyWorkPlane3.Visible = false;
+                olSketch2 = oCompDef.Sketches.Add(oCompDef.WorkPlanes[2]);
+
+            //шайба
+                SketchCircle[] olshaiba = new SketchCircle[3];
+                WorkPlane olWorkPlane3 = oCompDef.WorkPlanes.AddByPlaneAndOffset(oCompDef.WorkPlanes[2], H6 + H7 - S3 - 0.2);
+                olWorkPlane3.Visible = false;
+                PlanarSketch olSketch3 = oCompDef.Sketches.Add(olWorkPlane3);
+                olpoint3[6] = olSketch3.SketchPoints.Add(oloTransGeom2.CreatePoint2d( D2 / 2 - xx,  + yy), false);
+                olshaiba[1] = olSketch3.SketchCircles.AddByCenterRadius(olpoint3[6], 1.5);
+                Profile olProfileF3 = olSketch3.Profiles.AddForSolid();
+                ExtrudeFeature olExtrudeDef3 = oCompDef.Features.ExtrudeFeatures.AddByDistanceExtent
+               (olProfileF3, 0.2, PartFeatureExtentDirectionEnum.kPositiveExtentDirection,
+               PartFeatureOperationEnum.kJoinOperation, olProfileF3);
+            //
+                olSketch2 = oCompDef.Sketches.Add(olMyWorkPlane3);
+                //кругорвой срез с двух сторон болта
+                SketchPoint[] olpoint4 = new SketchPoint[10];
+                //верхняя часть
+                olpoint4[0] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - xx), 1 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[1] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(1 - (D2 / 2 - xx), 1 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[2] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - xx), 0.5 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[3] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 - (D2 / 2 - xx), 0), false);
+                olpoint4[4] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(0 - (D2 / 2 - xx), 5), false);
+                //нижняя часть
+                olpoint4[5] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - xx), 0 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[6] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(1 - (D2 / 2 - xx), 0 + H6 + H7 - S3 - 1.2), false);
+                olpoint4[7] = olSketch2.SketchPoints.Add(oloTransGeom2.CreatePoint2d(2 - (D2 / 2 - xx), 0.5 + H6 + H7 - S3 - 1.2), false);
+
+                SketchLine[] olline4 = new SketchLine[8];
+                olline4[0] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[0], olpoint4[1]);
+                olline4[1] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[0], olpoint4[2]);
+                olline4[2] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[1], olpoint4[2]);
+                olline4[3] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[3], olpoint4[4]);
+                olline4[4] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[5], olpoint4[6]);
+                olline4[5] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[5], olpoint4[7]);
+                olline4[6] = olSketch2.SketchLines.AddByTwoPoints(olpoint4[6], olpoint4[7]);
+
+                Profile oloProfileF11 = olSketch2.Profiles.AddForSolid();
+                RevolveFeature olrevolvefeature2 = oCompDef.Features.RevolveFeatures.AddFull(oloProfileF11, olline4[3], PartFeatureOperationEnum.kCutOperation);
+
+        }
+        public void MatePlane(bool MateOrFlush, int OccurrenceOne, int PartPlaneOne, int OccurrenceTwo, int PartPlaneTwo, string Offset)
+        {
+            AssemblyDocument oAssDoc = (AssemblyDocument)ThisApplication.ActiveDocument;
+            AssemblyComponentDefinition oAssCompDef = oAssDoc.ComponentDefinition;
+            ComponentOccurrence oOcc1 = default(ComponentOccurrence);
+            oOcc1 = oAssCompDef.Occurrences[OccurrenceOne];
+            ComponentOccurrence oOcc2 = default(ComponentOccurrence);
+            oOcc2 = oAssCompDef.Occurrences[OccurrenceTwo];
+            PartComponentDefinition oPartComDef = (PartComponentDefinition)oOcc1.Definition;
+            WorkPlane oPartPlane1 = oPartComDef.WorkPlanes[PartPlaneOne];
+            oPartComDef = (PartComponentDefinition)oOcc2.Definition;
+            WorkPlane oPartPlane2 = oPartComDef.WorkPlanes[PartPlaneTwo];
+            object oAsmPlane1Obj = null;
+            oOcc1.CreateGeometryProxy(oPartPlane1, out oAsmPlane1Obj);
+            WorkPlaneProxy oAsmPlane1 = (WorkPlaneProxy)oAsmPlane1Obj;
+            object oAsmPlane2Obj = null;
+            oOcc2.CreateGeometryProxy(oPartPlane2, out oAsmPlane2Obj);
+            WorkPlaneProxy oAsmPlane2 = (WorkPlaneProxy)oAsmPlane2Obj;
+            if (MateOrFlush == true)
+                oAssCompDef.Constraints.AddMateConstraint(oAsmPlane1, oAsmPlane2, Offset);
+            else
+                oAssCompDef.Constraints.AddFlushConstraint(oAsmPlane1, oAsmPlane2, Offset);
+        }
+        private void button40_Click(object sender, EventArgs e) //сборка
+        {
+            button2_Click(sender, e);
+            button3_Click(sender, e);
+            button4_Click(sender, e);
+            button5_Click(sender, e);
+            button6_Click(sender, e);
+            button7_Click(sender, e);
+            AssemblyDocument oAssDoc = (AssemblyDocument)ThisApplication.Documents.Add(DocumentTypeEnum.kAssemblyDocumentObject,
+               ThisApplication.FileManager.GetTemplateFile(DocumentTypeEnum.kAssemblyDocumentObject),true);
+            AssemblyComponentDefinition oAssCompDef = oAssDoc.ComponentDefinition;
+
+            oAssDoc.DisplayName = "Сборка аппарата";
+
+            TransientGeometry aTransGeom = ThisApplication.TransientGeometry;
+
+            Matrix oPositionMatrix = aTransGeom.CreateMatrix();
+
+            //Вставка в сборку моделей
+            ComponentOccurrence Модель_Днище = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Днище"], oPositionMatrix);
+            ComponentOccurrence Модель_Рубашка = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Рубашка"], oPositionMatrix);
+            ComponentOccurrence Модель_Крышка = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Крышка"], oPositionMatrix);
+            ComponentOccurrence Модель_Опоры = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Опоры"], oPositionMatrix);
+            ComponentOccurrence Модель_Фланцы = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Фланцы"], oPositionMatrix);
+            ComponentOccurrence Модель_Болты = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Болты"], oPositionMatrix);
+           
+            WorkAxis Axis = oAssCompDef.WorkAxes[2];
+            ObjectCollection Opori = ThisApplication.TransientObjects.CreateObjectCollection();
+            Opori.Add(oAssCompDef.Occurrences[4]);
+            oAssCompDef.OccurrencePatterns.AddCircularPattern(Opori, Axis, true, "90 degree", 4); //67.5  
+            //true или false отвечает направление вторая переменная номер модели, третья её плоскость, четвертая номер модели, пятая её плоскость, шестая строковая переменная за расстояние
+            MatePlane(true, 1, 1, 2, 1, "0");
+            MatePlane(false, 1, 2, 2, 2, "0");
+            MatePlane(true, 1, 3, 2, 3, "0");
+            MatePlane(true, 1, 1, 3, 1, "0");
+            MatePlane(false, 1, 2, 3, 2, "0");
+            MatePlane(true, 1, 3, 3, 3, "0");
+            MatePlane(true, 1, 1, 4, 1, "0");
+            MatePlane(false, 1, 2, 4, 2, "0");
+            MatePlane(true, 1, 3, 4, 3, "0");
+            MatePlane(true, 1, 1, 5, 1, "0");
+            MatePlane(false, 1, 2, 5, 2, "0");
+            MatePlane(true, 1, 3, 5, 3, "0");
+            MatePlane(true, 1, 1, 6, 1, "0");
+            MatePlane(false, 1, 2, 6, 2, "0");
+            MatePlane(true, 1, 3, 6, 3, "0");
+        }
+        #region //кнопки вызова созданных файлов
+        private void button56_Click(object sender, EventArgs e)
+        {
+            AssemblyDocument oAssDoc = (AssemblyDocument)ThisApplication.Documents.Add(DocumentTypeEnum.kAssemblyDocumentObject,
+               ThisApplication.FileManager.GetTemplateFile(DocumentTypeEnum.kAssemblyDocumentObject), true);
+            AssemblyComponentDefinition oAssCompDef = oAssDoc.ComponentDefinition;
+
+            oAssDoc.DisplayName = "Сборка аппарата";
+
+            TransientGeometry aTransGeom = ThisApplication.TransientGeometry;
+
+            Matrix oPositionMatrix = aTransGeom.CreateMatrix();
+
+            //Вставка в сборку моделей
+            ComponentOccurrence Модель_Днище = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Днище"], oPositionMatrix);
+            ComponentOccurrence Модель_Рубашка = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Рубашка"], oPositionMatrix);
+            ComponentOccurrence Модель_Крышка = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Крышка"], oPositionMatrix);
+            ComponentOccurrence Модель_Опоры = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Опоры"], oPositionMatrix);
+            ComponentOccurrence Модель_Фланцы = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Фланцы"], oPositionMatrix);
+            ComponentOccurrence Модель_Болты = oAssDoc.ComponentDefinition.Occurrences.Add(oFileName["Болты"], oPositionMatrix);
+
+            WorkAxis Axis = oAssCompDef.WorkAxes[2];
+            ObjectCollection Opori = ThisApplication.TransientObjects.CreateObjectCollection();
+            Opori.Add(oAssCompDef.Occurrences[4]);
+            oAssCompDef.OccurrencePatterns.AddCircularPattern(Opori, Axis, true, "90 degree", 4); //67.5  
+            //true или false отвечает направление вторая переменная номер модели, третья её плоскость, четвертая номер модели, пятая её плоскость, шестая строковая переменная за расстояние
+            MatePlane(true, 1, 1, 2, 1, "0");
+            MatePlane(false, 1, 2, 2, 2, "0");
+            MatePlane(true, 1, 3, 2, 3, "0");
+            MatePlane(true, 1, 1, 3, 1, "0");
+            MatePlane(false, 1, 2, 3, 2, "0");
+            MatePlane(true, 1, 3, 3, 3, "0");
+            MatePlane(true, 1, 1, 4, 1, "0");
+            MatePlane(false, 1, 2, 4, 2, "0");
+            MatePlane(true, 1, 3, 4, 3, "0");
+            MatePlane(true, 1, 1, 5, 1, "0");
+            MatePlane(false, 1, 2, 5, 2, "0");
+            MatePlane(true, 1, 3, 5, 3, "0");
+            MatePlane(true, 1, 1, 6, 1, "0");
+            MatePlane(false, 1, 2, 6, 2, "0");
+            MatePlane(true, 1, 3, 6, 3, "0");
+        }
+        private void button50_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            openFileDialog1.Title = "Открыть файл Днище";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(openFileDialog1.FileName))
+                {
+                    oPartDoc["Днище"] = (PartDocument)ThisApplication.Documents.Open(openFileDialog1.FileName, true);
+                    oPartDoc["Днище"].DisplayName = "Днище";
+                    oFileName["Днище"] = openFileDialog1.FileName;
+                }
+            }
+            MessageBox.Show("Файл Днище открыт!", "Сообщение");
+        }
+        private void button51_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            openFileDialog1.Title = "Открыть файл Рубашка";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(openFileDialog1.FileName))
+                {
+                    oPartDoc["Рубашка"] = (PartDocument)ThisApplication.Documents.Open(openFileDialog1.FileName, true);
+                    oPartDoc["Рубашка"].DisplayName = "Рубашка";
+                    oFileName["Рубашка"] = openFileDialog1.FileName;
+                }
+            }
+            MessageBox.Show("Файл Рубашка открыт!", "Сообщение");
+        }
+        private void button52_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            openFileDialog1.Title = "Открыть файл Крышка";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(openFileDialog1.FileName))
+                {
+                    oPartDoc["Крышка"] = (PartDocument)ThisApplication.Documents.Open(openFileDialog1.FileName, true);
+                    oPartDoc["Крышка"].DisplayName = "Крышка";
+                    oFileName["Крышка"] = openFileDialog1.FileName;
+                }
+            }
+            MessageBox.Show("Файл Крышка открыт!", "Сообщение");
+        }
+        private void button53_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            openFileDialog1.Title = "Открыть файл Опоры";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(openFileDialog1.FileName))
+                {
+                    oPartDoc["Опоры"] = (PartDocument)ThisApplication.Documents.Open(openFileDialog1.FileName, true);
+                    oPartDoc["Опоры"].DisplayName = "Опоры";
+                    oFileName["Опоры"] = openFileDialog1.FileName;
+                }
+            }
+            MessageBox.Show("Файл Опоры открыт!", "Сообщение");
+        }
+        private void button54_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            openFileDialog1.Title = "Открыть файл Фланцы";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(openFileDialog1.FileName))
+                {
+                    oPartDoc["Фланцы"] = (PartDocument)ThisApplication.Documents.Open(openFileDialog1.FileName, true);
+                    oPartDoc["Фланцы"].DisplayName = "Фланцы";
+                    oFileName["Фланцы"] = openFileDialog1.FileName;
+                }
+            }
+            MessageBox.Show("Файл Фланцы открыт!", "Сообщение");
+        }
+        private void button55_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Filter = "Inventor Part Document|*.ipt";
+            openFileDialog1.Title = "Открыть файл Фланцы";
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if (!string.IsNullOrWhiteSpace(openFileDialog1.FileName))
+                {
+                    oPartDoc["Болты"] = (PartDocument)ThisApplication.Documents.Open(openFileDialog1.FileName, true);
+                    oPartDoc["Болты"].DisplayName = "Болты";
+                    oFileName["Болты"] = openFileDialog1.FileName;
+                }
+            }
+            MessageBox.Show("Файл Болты открыт!", "Сообщение");
+        }
+        #endregion
+
+        private void zapiska_Click(object sender, EventArgs e)
+        { 
+            System.Windows.Forms.MessageBox.Show("Запуск Вспомогательной записки может занять несколько минут!");
+            System.Diagnostics.Process.Start("D:/RG/Desktop/Диплом Ромы/Galimov/Galimov/Resources/VKR_Gal.docx"); 
+        }
+                
+    }
+}
