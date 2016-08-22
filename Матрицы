@@ -1,0 +1,35 @@
+#include "iostream" 
+using namespace std;
+void main()
+{
+	double mas[255][255],maxl=0,maxg=0;
+	int n,m;
+	cout<<"Vvedite razm n= ";
+	cin>>n;
+	cout<<"Vvedite razm m= ";
+	cin>>m;
+	for (int i=0; i<n; i++)
+	{
+		for (int j=0; j<m; j++)
+		{
+			cin>>mas[i][j];
+		}
+		cout<<'\n';
+	}
+	maxl=mas[0][0];
+	maxg=mas[0][0];
+	for (int i=0; i<n; i++)
+	{
+		maxl=mas[i][0];
+		for (int j=0; j<m; j++)
+		{
+			if (mas[i][j]>maxl)
+				maxl=mas[i][j];
+			if (mas[i][j]>maxg)
+				maxg=mas[i][j];
+		}
+		cout<<"Max v stroke :"<<i<<" = "<<maxl<<'\n';
+	}
+	cout<<"Max global :"<<maxg<<'\n';
+	system("pause"); 
+}
